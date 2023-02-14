@@ -15,11 +15,6 @@ def valida_rango(tipo_ubicacion, coordenadas_ubicacion, distancia_max, lat, lon)
     if tipo_ubicacion=="poligono":
         punto_actual = geometry.Point(Decimal(lat), Decimal(lon))
         coordenadas_ubicacion = [tuple(d.values())  for d in coordenadas_ubicacion]
-        print("coordenadas ubicacion")
-        print(coordenadas_ubicacion)
         poligono_ubicacion = geometry.Polygon(tuple(coordenadas_ubicacion))
-        print("Poligono")
-        print(poligono_ubicacion)
-        print("En Poligono: {}".format(poligono_ubicacion.contains(punto_actual)))
         return poligono_ubicacion.contains(punto_actual), 0
     return False,0

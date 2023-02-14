@@ -118,14 +118,10 @@ class Empleado(models.Model):
         self._en_rango = False
         self._distancia_actual = 0
         try:
-            print(self.cedula)
-            print(self.ubicacion)
-            print(self.ubicacion.coordenadas)
             if not self.cedula or not self.ubicacion or not self.ubicacion.coordenadas:
                 return self._en_rango
             if not self.lat_actual or not self.lon_actual:
                 return self._en_rango
-
             self._en_rango, self._distancia_actual = cf.valida_rango( 
                 self.ubicacion.tipo_dato, self.ubicacion.coordenadas, self.ubicacion.distancia_max,
                 Decimal(self.lat_actual), Decimal(self.lon_actual)) 
