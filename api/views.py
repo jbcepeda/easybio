@@ -159,6 +159,7 @@ class UbicacionDetalle(APIView):
         try:
             local_instance = Ubicacion.objects.get(id=id)
             if local_instance:
+                print(type(local_instance))
                 serializer = UbicacionSerializer(local_instance)
                 return Response(serializer.data)
         except Exception as ex:
@@ -192,11 +193,13 @@ class Ubicaciones(APIView):
             parent_id = request.GET.get('parent_id', None)
             if parent_id is not None:
                 local_instance = Ubicacion.objects.filter(Q(empresa__id=parent_id))
+                #local_instance = Ubicacion.objects.all()               
                 serializer = UbicacionSerializer(local_instance, many=True)
                 return Response(serializer.data)
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)    
         except Exception as ex:
+            print(ex.__dict__)
             return Response(status=status.HTTP_400_BAD_REQUEST)
  
     def post(self, request):
@@ -211,9 +214,21 @@ class EmpleadoDetalle(APIView):
         try:
             local_instance = Empleado.objects.get(id=id)
             if local_instance:
+                cur_lat = request.GET.get('la', None)
+                cur_lon = request.GET.get('lo', None)
+                if cur_lat is not None and cur_lon is not None:
+                    print("la:{} lo:{}".format(cur_lat, cur_lon))
+                    local_instance.lat_actual=cur_lat
+                    local_instance.lon_actual=cur_lon
+                    if local_instance.en_rango:
+                        print("En rango")
+                    else:
+                        print("Fuera de rango")
+                    print(local_instance.distancia_actual)
                 serializer = EmpleadoSerializer(local_instance)
                 return Response(serializer.data)
         except Exception as ex:
+            print(ex.__dict__)
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status.HTTP_200_OK)
 
