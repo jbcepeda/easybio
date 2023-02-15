@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db.models.query_utils import Q
 
+
 class EstadoDetalle(APIView):
 
     def get(self, request, id):
@@ -42,17 +43,22 @@ class EstadoDetalle(APIView):
 
 class Estados(APIView):
     def get(self, request):
-        local_instance = Estado.objects.all()
-        serializer = EstadoSerializer(local_instance, many=True)
-        return Response(serializer.data)
+        try:
+            local_instance = Estado.objects.all()
+            serializer = EstadoSerializer(local_instance, many=True)
+            return Response(serializer.data)
+        except Exception as ex:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
-        serializer = EstadoSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        try:
+            serializer = EstadoSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class EmpresaDetalle(APIView):
 
@@ -90,16 +96,77 @@ class EmpresaDetalle(APIView):
 
 class Empresas(APIView):
     def get(self, request):
-        local_instance = Empresa.objects.all()
-        serializer = EmpresaSerializer(local_instance, many=True)
-        return Response(serializer.data)
+        try:
+            local_instance = Empresa.objects.all()
+            serializer = EmpresaSerializer(local_instance, many=True)
+            return Response(serializer.data)
+        except Exception as ex:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
-        serializer = EmpresaSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            serializer = EmpresaSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            return Response(status=status.HTTP_400_BAD_REQUEST)    
+
+class TipoEventoDetalle(APIView):
+    def get(self, request, id):
+        try:
+            local_instance = TipoEvento.objects.get(id=id)
+            if local_instance:
+                serializer = TipoEventoSerializer(local_instance)
+                return Response(serializer.data)
+        except Exception as ex:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(status.HTTP_200_OK)
+
+    def put(self, request, id):
+        try:
+            local_instance = TipoEvento.objects.get(pk=id)
+            if local_instance:
+                serializer = TipoEventoSerializer(local_instance, data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response(serializer.data)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, id):
+        try:
+            local_instance = TipoEvento.objects.get(pk=id)
+            local_instance.delete()
+            return Response(status.HTTP_200_OK)
+        except Exception as ex:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class TipoEventos(APIView):
+    def get(self, request):
+        try:
+            parent_id = request.GET.get('parent_id', None)
+            if parent_id is not None:
+                local_instance = TipoEvento.objects.filter(Q(empleado__id=parent_id))
+                serializer = TipoEventoSerializer(local_instance, many=True)
+                return Response(serializer.data)
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)    
+        except Exception as ex:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+ 
+    def post(self, request):
+        try:
+            serializer = TipoEventoSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class DepartamentoDetalle(APIView):
     def get(self, request, id):
@@ -148,12 +215,15 @@ class Departamentos(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
  
     def post(self, request):
-        serializer = DepartamentoSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        try:
+            serializer = DepartamentoSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
 class UbicacionDetalle(APIView):
     def get(self, request, id):
         try:
@@ -203,28 +273,33 @@ class Ubicaciones(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
  
     def post(self, request):
-        serializer = UbicacionSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            serializer = UbicacionSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class EmpleadoDetalle(APIView):
     def get(self, request, id):
         try:
+            _data = request.data
             local_instance = Empleado.objects.get(id=id)
             if local_instance:
-                cur_lat = request.GET.get('la', None)
-                cur_lon = request.GET.get('lo', None)
-                if cur_lat is not None and cur_lon is not None:
-                    print("la:{} lo:{}".format(cur_lat, cur_lon))
-                    local_instance.lat_actual=cur_lat
-                    local_instance.lon_actual=cur_lon
-                    if local_instance.en_rango:
+                if _data is not None and _data.evento_empleado is not None and \
+                    _data.evento_empleado_coordenadas is not None:
+                    print("evento:{}".format(_data.evento_empleado.__str__))
+                    local_instance.evento_empleado = _data.evento_empleado
+                    if local_instance.evento_empleado.en_rango:
                         print("En rango")
+                        serializer = EventoEmpleadoSerializer(local_instance.evento_empleado)
+                        if serializer.is_valid():
+                          serializer.save()                        
                     else:
-                        print("Fuera de rango")
-                    print(local_instance.distancia_actual)
+                        print("Fuera de rango:")
+                        print(local_instance.evento_empleado.__str__)
                 serializer = EmpleadoSerializer(local_instance)
                 return Response(serializer.data)
         except Exception as ex:
@@ -267,12 +342,15 @@ class Empleados(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
  
     def post(self, request):
-        serializer = EmpleadoSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        try:
+            serializer = EmpleadoSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
 class PerfilDetalle(APIView):
     def get(self, request, id):
         try:
@@ -308,19 +386,24 @@ class PerfilDetalle(APIView):
 
 class Perfiles(APIView):
     def get(self, request):
-        local_instance = Perfil.objects.all()
-        serializer = PerfilSerializer(local_instance, many=True)
-        return Response(serializer.data)
-
+        try:
+            local_instance = Perfil.objects.all()
+            serializer = PerfilSerializer(local_instance, many=True)
+            return Response(serializer.data)
+        except Exception as ex:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
     def post(self, request):
-        serializer = PerfilSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        try:
+            serializer = PerfilSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
 class UsuarioDetalle(APIView):
-
     def get(self, request, id):
         try:
             local_instance = Usuario.objects.get(id=id)
@@ -355,17 +438,35 @@ class UsuarioDetalle(APIView):
 
 class Usuarios(APIView):
     def get(self, request):
-        parent_id = request.GET.get('parent_id', None)
-        if parent_id is not None:
-            local_instance = Usuario.objects.filter(Q(empleado__departamento__empresa__id=parent_id))
-            serializer = UsuarioSerializer(local_instance, many=True)
-            return Response(serializer.data)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)    
-
+        try:
+            parent_id = request.GET.get('parent_id', None)
+            if parent_id is not None:
+                local_instance = Usuario.objects.filter(Q(empleado__departamento__empresa__id=parent_id))
+                serializer = UsuarioSerializer(local_instance, many=True)
+                return Response(serializer.data)
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)    
+        except Exception as ex:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
     def post(self, request):
-        serializer = UsuarioSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            serializer = UsuarioSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            return Response(status=status.HTTP_400_BAD_REQUEST)    
+        
+def error400View(request, exception):
+    return render(request, 'error_404.html', status = 400)
+
+def error403View(request, exception):
+    return render(request, 'error_404.html', status = 403)
+
+def error404View(request, exception):
+    return render(request, 'error_404.html', status = 404)
+
+def error500View(request):
+    return render(request, 'error_404.html', status = 500)

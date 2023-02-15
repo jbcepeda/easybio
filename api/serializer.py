@@ -13,6 +13,13 @@ class EmpresaSerializer(serializers.ModelSerializer):
         model = Empresa
         fields = "__all__"
         
+class TipoEventoSerializer(serializers.ModelSerializer):
+    empresa = EmpresaSerializer(many=False, read_only=True)
+    estado = EstadoSerializer(many=False, read_only=True)
+    class Meta:
+        model = TipoEvento
+        fields = "__all__" 
+                
 class DepartamentoSerializer(serializers.ModelSerializer):
     empresa = EmpresaSerializer(many=False, read_only=True)
     estado = EstadoSerializer(many=False, read_only=True)
@@ -28,11 +35,18 @@ class UbicacionSerializer(serializers.ModelSerializer):
         model = Ubicacion
         fields = ("__all__")
         
+class EventoEmpleadoSerializer(serializers.ModelSerializer):
+    evento = TipoEventoSerializer(many=False, read_only=True)
+    estado = EstadoSerializer(many=False, read_only=True)
+    class Meta:
+        model = EventoEmpleado
+        fields = "__all__" 
+                
 class EmpleadoSerializer(serializers.ModelSerializer):
-    #en_rango = serializers.SerializerMethodField()
     departamento = DepartamentoSerializer(many=False, read_only=True)
     ubicacion = UbicacionSerializer(many=False, read_only=True)
     estado = EstadoSerializer(many=False, read_only=True)
+    evento_empleado = EventoEmpleadoSerializer(many=False, read_only=True)
 
     class Meta:
         model = Empleado
@@ -58,6 +72,7 @@ class CoordenadaSerializer(serializers.ModelSerializer):
         model = Coordenada
         fields = ("__all__") 
         
+
         
         
     
