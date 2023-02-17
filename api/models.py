@@ -5,7 +5,9 @@ from api import customfunctions as cf
 class Estado(models.Model):
     descripcion = models.CharField(max_length=50)
     color = models.CharField(max_length=7)
-    
+    def __str__(self):
+        return "%s %s" % (self.descripcion, self.color)
+        
 class Empresa(models.Model):
     ruc = models.CharField(max_length=13, unique=True)
     razon_social = models.CharField(max_length=200)
@@ -35,7 +37,7 @@ class TipoEvento(models.Model):
     estado = models.ForeignKey(Estado, on_delete=models.RESTRICT, null=False,
                                  related_name='tipo_evento_estado')
     def __str__(self):
-        return "%s %s" % (self.empresa, self.descripcion, self.orden, self.estado)
+        return "%s %s %s %s" % (self.empresa, self.descripcion, self.orden, self.estado)
         
 class Departamento(models.Model):
     empresa = models.ForeignKey(
@@ -80,8 +82,8 @@ class Ubicacion(models.Model):
                                  related_name = 'ubicacion_estado')
  
     def __str__(self):
-         return "%s %s %s" % (self.empresa.ruc,self.descripcion,
-                              self.tipo_dato)  
+         return "%s %s %s %s" % (self.empresa.ruc,self.descripcion,
+                              self.tipo_dato, self.coordenadas)  
         
 class Empleado(models.Model):
     cedula = models.CharField(max_length=10)
@@ -109,22 +111,6 @@ class Empleado(models.Model):
     def evento_empleado(self, value)-> None:
         self._evento_empleado = value
     
-    # @property
-    # def lat_actual(self)->str:
-    #     return self._lat_actual
-    
-    # @lat_actual.setter
-    # def lat_actual(self, value)-> None:
-    #     self._lat_actual = value
-
-    # @property
-    # def lon_actual(self)->str:
-    #     return self._lon_actual
-    
-    # @lon_actual.setter
-    # def lon_actual(self, value)-> None:
-    #     self._lon_actual = value
-
     # @property
     # def distancia_actual(self)->str:
     #     return self._distancia_actual
@@ -194,7 +180,7 @@ class EventoEmpleado(models.Model):
                                related_name='evento_empleado_tipo_evento')
     fecha = models.DateField()
     hora = models.TimeField()
-    coordena_evento = Coordenada
+    coordenada_evento = Coordenada
     distancia_actual = models.IntegerField()
     dispositivo = models.CharField(max_length=20, null=False)
     ubicacion = Ubicacion()
@@ -209,24 +195,24 @@ class EventoEmpleado(models.Model):
                 return self._en_rango
             self._en_rango, self.distancia_actual = cf.valida_rango( 
                 self.ubicacion.tipo_dato, self.ubicacion.coordenadas, self.ubicacion.distancia_max,
-                Decimal(self.coordena_evento.lat), Decimal(self.coordena_evento.lon)) 
+                Decimal(self.coordenada_evento.lat), Decimal(self.coordenada_evento.lon)) 
         except Exception as ex:
             print(ex.__dict__)
             return False
         finally:
             return  self._en_rango and self.distancia_actual <= self.ubicacion.distancia_max
 
-    @classmethod
-    def create(cls, empleado, evento, fecha, hora, coordenada_evento, dispositivo, ubicacion, estado):
-        evento_empleado = cls(empleado=empleado, evento=evento, fecha=fecha,
-                                hora=hora, coordenada_evento=coordenada_evento,
-                                dispositivo=dispositivo, ubicacion=ubicacion,
-                                estado=estado)
-        # do something with the evento_empleado
-        return evento_empleado
-    # evento_empleado = EventoEmpleado.create(empleado=1, evento=1, ... estado=1)
+    # @classmethod
+    # def create(cls, empleado, evento, fecha, hora, coordenada_evento, dispositivo, ubicacion, estado):
+    #     evento_empleado = cls(empleado=empleado, evento=evento, fecha=fecha,
+    #                             hora=hora, coordenada_evento=coordenada_evento,
+    #                             dispositivo=dispositivo, ubicacion=ubicacion,
+    #                             estado=estado)
+    #     # do something with the evento_empleado
+    #     return evento_empleado
+    # # evento_empleado = EventoEmpleado.create(empleado=1, evento=1, ... estado=1)
 
-    def __str__(self):
-        return "%s %s %s %s %s %s %s %s %s" % (
-            self.empleado, self.evento, self.fecha, self.hora, self.coordena_evento, self.dispositivo,
-            self.ubicacion, self.estado)
+    # def __str__(self):
+    #     return "%s %s %s %s %s %s %s %s" % (
+    #         self.empleado, self.evento, self.fecha, self.hora, self.coordenada_evento, self.dispositivo,
+    #         self.ubicacion, self.estado)
