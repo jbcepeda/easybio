@@ -82,8 +82,8 @@ class Ubicacion(models.Model):
                                  related_name = 'ubicacion_estado')
  
     def __str__(self):
-         return "%s %s %s %s" % (self.empresa.ruc,self.descripcion,
-                              self.tipo_dato, self.coordenadas)  
+         return "%s %s %s %s %s %s" % (self.empresa.ruc,self.descripcion,
+                              self.tipo_dato, self.coordenadas, self.distancia_min, self.distancia_max)  
         
 class Empleado(models.Model):
     cedula = models.CharField(max_length=10)
@@ -110,33 +110,7 @@ class Empleado(models.Model):
     @evento_empleado.setter
     def evento_empleado(self, value)-> None:
         self._evento_empleado = value
-    
-    # @property
-    # def distancia_actual(self)->str:
-    #     return self._distancia_actual
-    
-    # @distancia_actual.setter
-    # def distancia_actual(self, value)-> None:
-    #     self._distancia_actual = value
-
-    # @property
-    # def en_rango(self)->bool:
-    #     self._en_rango = False
-    #     self._distancia_actual = 0
-    #     try:
-    #         if not self.cedula or not self.ubicacion or not self.ubicacion.coordenadas:
-    #             return self._en_rango
-    #         if not self.lat_actual or not self.lon_actual:
-    #             return self._en_rango
-    #         self._en_rango, self._distancia_actual = cf.valida_rango( 
-    #             self.ubicacion.tipo_dato, self.ubicacion.coordenadas, self.ubicacion.distancia_max,
-    #             Decimal(self.lat_actual), Decimal(self.lon_actual)) 
-    #     except Exception as ex:
-    #         print(ex.__dict__)
-    #         return False
-    #     finally:
-    #         return  self._en_rango and self.distancia_actual <= self.ubicacion.distancia_max
-    
+      
     def __str__(self):
         return "%s %s %s %s %s" % (self.departamento.empresa.ruc, 
                              self.departamento.descripcion,
@@ -180,10 +154,11 @@ class EventoEmpleado(models.Model):
                                related_name='evento_empleado_tipo_evento')
     fecha = models.DateField()
     hora = models.TimeField()
-    coordenada_evento = Coordenada
+    coordenada_evento = models.Field(Coordenada())
     distancia_actual = models.IntegerField()
     dispositivo = models.CharField(max_length=20, null=False)
-    ubicacion = Ubicacion()
+    ubicacion = models.ForeignKey(Ubicacion, on_delete = models.RESTRICT, null = False,
+                                 related_name = 'evento_empleado_ubicacion')
     estado = models.ForeignKey(Estado, on_delete=models.RESTRICT, null=False,
                                  related_name='evento_empleado_estado')
     @property
@@ -194,25 +169,18 @@ class EventoEmpleado(models.Model):
             if not self.coordenada_evento:
                 return self._en_rango
             self._en_rango, self.distancia_actual = cf.valida_rango( 
-                self.ubicacion.tipo_dato, self.ubicacion.coordenadas, self.ubicacion.distancia_max,
-                Decimal(self.coordenada_evento.lat), Decimal(self.coordenada_evento.lon)) 
+                tipo_dato = self.ubicacion.tipo_dato, 
+                coordenadas_ubicacion = self.ubicacion.coordenadas,
+                distancia_max = self.ubicacion.distancia_max,
+                lat = Decimal(self.coordenada_evento["lat"]), 
+                lon = Decimal(self.coordenada_evento["lon"])) 
         except Exception as ex:
-            print(ex.__dict__)
+            print(str(ex))
             return False
         finally:
             return  self._en_rango and self.distancia_actual <= self.ubicacion.distancia_max
-
-    # @classmethod
-    # def create(cls, empleado, evento, fecha, hora, coordenada_evento, dispositivo, ubicacion, estado):
-    #     evento_empleado = cls(empleado=empleado, evento=evento, fecha=fecha,
-    #                             hora=hora, coordenada_evento=coordenada_evento,
-    #                             dispositivo=dispositivo, ubicacion=ubicacion,
-    #                             estado=estado)
-    #     # do something with the evento_empleado
-    #     return evento_empleado
-    # # evento_empleado = EventoEmpleado.create(empleado=1, evento=1, ... estado=1)
-
-    # def __str__(self):
-    #     return "%s %s %s %s %s %s %s %s" % (
-    #         self.empleado, self.evento, self.fecha, self.hora, self.coordenada_evento, self.dispositivo,
-    #         self.ubicacion, self.estado)
+        
+    def __str__(self):
+        return "%s %s %s %s %s %s %s %s" % (
+            self.empleado, self.evento, self.fecha, self.hora, self.coordenada_evento, self.dispositivo,
+            self.ubicacion, self.estado)

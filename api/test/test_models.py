@@ -224,24 +224,93 @@ class EventoEmpleadoTestCase(APITestCase):
         init_data_test(self=self)
         return super().setUp()
 
-    def test_evento_empleado_en_rango(self):
-        _coordenada = {"lat": -0.1898208998328632, "lon": -78.48750746006637}
-        _en_rango, _distancia_actual = customfunctions.valida_rango(tipo_dato = self.ubicacion.tipo_dato, \
-            coordenadas_ubicacion = self.ubicacion.coordenadas, distancia_max = self.ubicacion.distancia_max, \
-                lat = _coordenada["lat"], lon = _coordenada["lon"])        
-        
+    def test_evento_empleado_list(self):
+        _coordenada = {"lat": -0.19044383946406043, "lon": -78.48829875522068}
         self.evento_empleado = EventoEmpleado.objects.create(   
             empleado = self.empleado, 
             evento = self.tipo_evento,
             fecha = '2023-02-17',
             hora = '08:30',
-            #coordenada_evento = _coordenada,
-            distancia_actual = _distancia_actual,
+            coordenada_evento = _coordenada,
+            distancia_actual = 0,
             dispositivo = 'TestCase',
             ubicacion = self.ubicacion,
             estado = self.estado
         )
-        
         items_count = EventoEmpleado.objects.filter(dispositivo = "TestCase").count()
-        #print(self.evento_empleado.__str__)
+        print(self.evento_empleado.__str__)
         self.assertEqual(items_count,1)
+
+    def test_evento_empleado_en_rango(self):
+        _result = False
+        _coordenada = {"lat": -0.19044383946406043, "lon": -78.48829875522068}
+        self.evento_empleado = EventoEmpleado.objects.create(   
+            empleado = self.empleado, 
+            evento = self.tipo_evento,
+            fecha = '2023-02-17',
+            hora = '08:30',
+            coordenada_evento = _coordenada,
+            distancia_actual = 0,
+            dispositivo = 'TestCase',
+            ubicacion = self.ubicacion,
+            estado = self.estado
+        )
+        _result = self.evento_empleado.en_rango
+        self.empleado.evento_empleado = self.evento_empleado
+        print(self.empleado.evento_empleado.__str__)
+        self.assertEqual(_result,True)
+
+    def test_evento_empleado_fuera_de_rango(self):
+        _result = False
+        _coordenada = {"lat": -0.1898208998328632, "lon": -78.48750746006637}
+        self.evento_empleado = EventoEmpleado.objects.create(   
+            empleado = self.empleado, 
+            evento = self.tipo_evento,
+            fecha = '2023-02-17',
+            hora = '08:30',
+            coordenada_evento = _coordenada,
+            distancia_actual = 0,
+            dispositivo = 'TestCase',
+            ubicacion = self.ubicacion,
+            estado = self.estado
+        )
+        _result =self.evento_empleado.en_rango
+        print(self.evento_empleado.__str__)
+        self.assertEqual(_result, False)
+
+    def test_evento_empleado_sin_coordenada(self):
+        _result = False
+        _coordenada = None
+        self.evento_empleado = EventoEmpleado.objects.create(   
+            empleado = self.empleado, 
+            evento = self.tipo_evento,
+            fecha = '2023-02-17',
+            hora = '08:30',
+            coordenada_evento = _coordenada,
+            distancia_actual = 0,
+            dispositivo = 'TestCase',
+            ubicacion = self.ubicacion,
+            estado = self.estado
+        )
+        _result =self.evento_empleado.en_rango
+        print(self.evento_empleado.__str__)
+        self.assertEqual(_result, False)
+
+    def test_evento_empleado_mal_formato_coordenada(self):
+        _result = False
+        _coordenada = {"lat": "ABCD5", "lon": "XYZ2"}
+        self.evento_empleado = EventoEmpleado.objects.create(   
+            empleado = self.empleado, 
+            evento = self.tipo_evento,
+            fecha = '2023-02-17',
+            hora = '08:30',
+            coordenada_evento = _coordenada,
+            distancia_actual = 0,
+            dispositivo = 'TestCase',
+            ubicacion = self.ubicacion,
+            estado = self.estado
+        )
+        _result =self.evento_empleado.en_rango
+        print(self.evento_empleado.__str__)
+        self.assertEqual(_result, False)
+
