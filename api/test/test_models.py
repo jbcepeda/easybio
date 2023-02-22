@@ -3,10 +3,14 @@
     API Model test
 """
 
+import logging
 from rest_framework.test import APITestCase
 from api.models import * 
 from api import customfunctions
 
+logger = logging.getLogger(__name__)
+print("iniciando TEST")
+print(logger)
 # Create your tests here.
 def init_data_test(self) -> None:
     self.estado = Estado.objects.create(descripcion = "Inicial", color = '0000FF')
@@ -142,7 +146,7 @@ class CustomFunctionsTestCase(APITestCase):
 class EstadoModelTestCase(APITestCase):
     def setUp(self) -> None:
         init_data_test(self=self)
-        print(self.estado.__str__)
+        logger.debug(self.estado.__str__)
         return super().setUp()
     
     def test_estado_list(self):
@@ -152,7 +156,7 @@ class EstadoModelTestCase(APITestCase):
 class EmpresaModelTestCase(APITestCase):
     def setUp(self) -> None:
         init_data_test(self=self)
-        print(self.empresa.__str__)
+        logger.debug(self.empresa.__str__)
         return super().setUp()
     
     def test_empresa_list(self):
@@ -162,7 +166,7 @@ class EmpresaModelTestCase(APITestCase):
 class TipoEventoModelTestCase(APITestCase):
     def setUp(self) -> None:
         init_data_test(self=self)
-        print(self.tipo_evento.__str__)
+        logger.debug(self.tipo_evento.__str__)
         return super().setUp()
 
     def test_tipo_evento_list(self):
@@ -172,7 +176,7 @@ class TipoEventoModelTestCase(APITestCase):
 class DepartamentoModelTestCase(APITestCase):
     def setUp(self) -> None:
         init_data_test(self=self)
-        print(self.departamento.__str__)
+        logger.debug(self.departamento.__str__)
         return super().setUp()
 
     def test_departamento_list(self):
@@ -182,7 +186,7 @@ class DepartamentoModelTestCase(APITestCase):
 class UbicacionModelTestCase(APITestCase):
     def setUp(self) -> None:
         init_data_test(self=self)
-        print(self.ubicacion.__str__)
+        logger.debug(self.ubicacion.__str__)
         return super().setUp()
 
     def test_ubicacion_list(self):
@@ -192,7 +196,7 @@ class UbicacionModelTestCase(APITestCase):
 class EmpleadoModelTestCase(APITestCase):
     def setUp(self) -> None:
         init_data_test(self=self)
-        print(self.empleado.__str__)
+        logger.debug(self.empleado.__str__)
         return super().setUp()
 
     def test_empleado_list(self):
@@ -202,7 +206,7 @@ class EmpleadoModelTestCase(APITestCase):
 class PerfilModelTestCase(APITestCase):
     def setUp(self) -> None:
         init_data_test(self=self)
-        print(self.perfil.__str__)
+        logger.debug(self.perfil.__str__)
         return super().setUp()
 
     def test_perfil_list(self):
@@ -212,7 +216,7 @@ class PerfilModelTestCase(APITestCase):
 class UsuarioModelTestCase(APITestCase):
     def setUp(self) -> None:
         init_data_test(self=self)
-        print(self.usuario.__str__)
+        logger.debug(self.usuario.__str__)
         return super().setUp()
 
     def test_usuario_list(self):
@@ -232,13 +236,14 @@ class EventoEmpleadoTestCase(APITestCase):
             fecha = '2023-02-17',
             hora = '08:30',
             coordenada_evento = _coordenada,
+            intento_exitoso = False,
             distancia_actual = 0,
             dispositivo = 'TestCase',
             ubicacion = self.ubicacion,
             estado = self.estado
         )
         items_count = EventoEmpleado.objects.filter(dispositivo = "TestCase").count()
-        print(self.evento_empleado.__str__)
+        logger.debug(self.evento_empleado.__str__)
         self.assertEqual(items_count,1)
 
     def test_evento_empleado_en_rango(self):
@@ -250,15 +255,16 @@ class EventoEmpleadoTestCase(APITestCase):
             fecha = '2023-02-17',
             hora = '08:30',
             coordenada_evento = _coordenada,
+            intento_exitoso = False,
             distancia_actual = 0,
             dispositivo = 'TestCase',
             ubicacion = self.ubicacion,
             estado = self.estado
         )
-        _result = self.evento_empleado.en_rango
+        _result = self.evento_empleado.en_rango()
         self.empleado.evento_empleado = self.evento_empleado
-        print(self.empleado.evento_empleado.__str__)
-        self.assertEqual(_result,True)
+        logger.debug(self.empleado.evento_empleado.__str__)
+        self.assertEqual(_result and self.evento_empleado.intento_exitoso,True)
 
     def test_evento_empleado_fuera_de_rango(self):
         _result = False
@@ -269,14 +275,15 @@ class EventoEmpleadoTestCase(APITestCase):
             fecha = '2023-02-17',
             hora = '08:30',
             coordenada_evento = _coordenada,
+            intento_exitoso = False,
             distancia_actual = 0,
             dispositivo = 'TestCase',
             ubicacion = self.ubicacion,
             estado = self.estado
         )
-        _result =self.evento_empleado.en_rango
-        print(self.evento_empleado.__str__)
-        self.assertEqual(_result, False)
+        _result =self.evento_empleado.en_rango()
+        logger.debug(self.evento_empleado.__str__)
+        self.assertEqual(_result and self.evento_empleado.intento_exitoso, False)
 
     def test_evento_empleado_sin_coordenada(self):
         _result = False
@@ -287,14 +294,15 @@ class EventoEmpleadoTestCase(APITestCase):
             fecha = '2023-02-17',
             hora = '08:30',
             coordenada_evento = _coordenada,
+            intento_exitoso = False,
             distancia_actual = 0,
             dispositivo = 'TestCase',
             ubicacion = self.ubicacion,
             estado = self.estado
         )
-        _result =self.evento_empleado.en_rango
-        print(self.evento_empleado.__str__)
-        self.assertEqual(_result, False)
+        _result =self.evento_empleado.en_rango()
+        logger.debug(self.evento_empleado.__str__)
+        self.assertEqual(_result and self.evento_empleado.intento_exitoso, False)
 
     def test_evento_empleado_mal_formato_coordenada(self):
         _result = False
@@ -305,12 +313,13 @@ class EventoEmpleadoTestCase(APITestCase):
             fecha = '2023-02-17',
             hora = '08:30',
             coordenada_evento = _coordenada,
+            intento_exitoso = False,
             distancia_actual = 0,
             dispositivo = 'TestCase',
             ubicacion = self.ubicacion,
             estado = self.estado
         )
-        _result =self.evento_empleado.en_rango
-        print(self.evento_empleado.__str__)
-        self.assertEqual(_result, False)
+        _result =self.evento_empleado.en_rango()
+        logger.debug(self.evento_empleado.__str__)
+        self.assertEqual(_result and self.evento_empleado.intento_exitoso, False)
 

@@ -1,6 +1,9 @@
+import logging
 from djongo import models
 from decimal import Decimal
 from api import customfunctions as cf
+
+logger = logging.getLogger(__name__)
 
 class Estado(models.Model):
     descripcion = models.CharField(max_length=50)
@@ -162,31 +165,31 @@ class EventoEmpleado(models.Model):
     hora = models.TimeField()
     coordenada_evento = models.Field(Coordenada)
     distancia_actual = models.IntegerField()
+    intento_exitoso = models.BooleanField(default=False)
     dispositivo = models.CharField(max_length=20, null=False)
     ubicacion = models.ForeignKey(Ubicacion, on_delete = models.RESTRICT, null = False,
                                  related_name = 'evento_empleado_ubicacion')
     estado = models.ForeignKey(Estado, on_delete=models.RESTRICT, null=False,
                                  related_name='evento_empleado_estado')
-    @property
     def en_rango(self)->bool:
-        self._en_rango = False
+        self.intento_exitoso = False
         self.distancia_actual = 0
         try:
             if not self.coordenada_evento:
-                return self._en_rango
-            self._en_rango, self.distancia_actual = cf.valida_rango( 
+                return self.intento_exitoso
+            self.intento_exitoso, self.distancia_actual = cf.valida_rango( 
                 tipo_dato = self.ubicacion.tipo_dato, 
                 coordenadas_ubicacion = self.ubicacion.coordenadas,
                 distancia_max = self.ubicacion.distancia_max,
                 lat = Decimal(self.coordenada_evento["lat"]), 
                 lon = Decimal(self.coordenada_evento["lon"])) 
         except Exception as ex:
-            print(str(ex))
+            logger.error(str(ex))
             return False
         finally:
-            return  self._en_rango and self.distancia_actual <= self.ubicacion.distancia_max
+            return  self.intento_exitoso and self.distancia_actual <= self.ubicacion.distancia_max
         
     def __str__(self):
-        return "%s %s %s %s %s %s %s %s" % (
-            self.empleado, self.evento, self.fecha, self.hora, self.coordenada_evento, self.dispositivo,
-            self.ubicacion, self.estado)
+        return "%s %s %s %s %s %s %s %s %s %s" % (
+            self.empleado, self.evento, self.fecha, self.hora, self.coordenada_evento, self.distancia_actual, 
+            self.intento_exitoso, self.dispositivo, self.ubicacion, self.estado)

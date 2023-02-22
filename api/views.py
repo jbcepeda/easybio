@@ -286,20 +286,22 @@ class EmpleadoDetalle(APIView):
     def get(self, request, id):
         try:
             _data = request.data
+            _validacion_en_rango = False
             local_instance = Empleado.objects.get(id=id)
             if local_instance:
                 if _data is not None and _data.evento_empleado is not None and \
                     _data.evento_empleado_coordenadas is not None:
                     print("evento:{}".format(_data.evento_empleado.__str__))
                     local_instance.evento_empleado = _data.evento_empleado
-                    if local_instance.evento_empleado.en_rango:
+                    _validacion_en_rango = local_instance.evento_empleado.en_rango() 
+                    if local_instance.evento_empleado.exitoso:
                         print("En rango")
-                        serializer = EventoEmpleadoSerializer(local_instance.evento_empleado)
-                        if serializer.is_valid():
-                          serializer.save()                        
                     else:
                         print("Fuera de rango:")
                         print(local_instance.evento_empleado.__str__)
+                    serializer = EventoEmpleadoSerializer(local_instance.evento_empleado)
+                    if serializer.is_valid():
+                        serializer.save()                        
                 serializer = EmpleadoSerializer(local_instance)
                 return Response(serializer.data)
         except Exception as ex:
