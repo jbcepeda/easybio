@@ -20,27 +20,25 @@ print("directorio BASE: {} ".format(BASE_DIR))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-50hi_kaa#)qxstv(yh#j3$012v@_zqu7!hmr@%n@ph=zlt1gdq'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['*']
-
-
 # Application definition
 
-INSTALLED_APPS = [
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
+]
+
+THIRD_PARTY_APPS = [    'rest_framework',
+]
+
+LOCAL_APPS = [
     'api',
 ]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -74,20 +72,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'easybio.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
-DATABASES = {
-        'default': {
-            'ENGINE':'djongo',
-            'NAME':'easybiodb',
-            'ENFORCE_SCHEMA': True,
-            'CLIENT': {
-                'host': 'mongodb://easybiousr:ClaveEasyBio2023@localhost:27017'
-            }             
-        }
-}
 
 
 

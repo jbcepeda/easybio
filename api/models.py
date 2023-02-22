@@ -58,6 +58,9 @@ class Coordenada(models.Model):
     lon = models.CharField(max_length = 20, default = "0.0")
     class Meta:
         abstract = True
+    
+    def __str__(self):
+        return "Coordenada"
 
 # class CoordenadaForm(forms.ModelForm):
 #     class Meta:
@@ -68,14 +71,15 @@ class Coordenada(models.Model):
   
         
 class Ubicacion(models.Model):
+    #TIPOS = (('point','point'), ('polygon','polygon'))
     empresa = models.ForeignKey(
         Empresa,
         on_delete=models.RESTRICT,
         related_name='ubicacion_empresa',
     )
     descripcion = models.CharField(max_length = 100)
-    tipo_dato = models.CharField(max_length = 100, default = "point")
-    coordenadas = models.ArrayField(model_container = Coordenada)
+    tipo_dato = models.CharField(max_length = 10, default = 'point')
+    coordenadas = models.ArrayField(model_container=Coordenada)
     distancia_min = models.IntegerField(default = 0)
     distancia_max =  models.IntegerField(default = 50)
     estado = models.ForeignKey(Estado, on_delete = models.RESTRICT, null = False,
@@ -83,7 +87,7 @@ class Ubicacion(models.Model):
  
     def __str__(self):
          return "%s %s %s %s %s %s" % (self.empresa.ruc,self.descripcion,
-                              self.tipo_dato, self.coordenadas, self.distancia_min, self.distancia_max)  
+                              self.tipo_dato.__str__, self.coordenadas, self.distancia_min, self.distancia_max)  
         
 class Empleado(models.Model):
     cedula = models.CharField(max_length=10)

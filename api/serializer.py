@@ -67,7 +67,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
         fields = "__all__"            
 
 class CoordenadaSerializer(serializers.ModelSerializer):
-    estado = EstadoSerializer(many=False, read_only=True)
+    #estado = EstadoSerializer(many=False, read_only=True)
     class Meta:
         model = Coordenada
         fields = ("__all__") 
