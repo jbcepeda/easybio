@@ -5,7 +5,9 @@ from api.serializer import *
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models.query_utils import Q
+import logging
 
+logger = logging.getLogger(__name__)
 
 class EstadoDetalle(APIView):
 
@@ -16,8 +18,8 @@ class EstadoDetalle(APIView):
                 serializer = EstadoSerializer(local_instance)
                 return Response(serializer.data)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        return Response(status.HTTP_200_OK)
 
     def put(self, request, id):
         try:
@@ -29,6 +31,7 @@ class EstadoDetalle(APIView):
                     return Response(serializer.data)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -38,6 +41,7 @@ class EstadoDetalle(APIView):
             local_instance.delete()
             return Response(status.HTTP_200_OK)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -48,6 +52,7 @@ class Estados(APIView):
             serializer = EstadoSerializer(local_instance, many=True)
             return Response(serializer.data)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
@@ -58,6 +63,7 @@ class Estados(APIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class EmpresaDetalle(APIView):
@@ -69,6 +75,7 @@ class EmpresaDetalle(APIView):
                 serializer = EmpresaSerializer(local_instance)
                 return Response(serializer.data)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status.HTTP_200_OK)
 
@@ -82,6 +89,7 @@ class EmpresaDetalle(APIView):
                     return Response(serializer.data)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -91,6 +99,7 @@ class EmpresaDetalle(APIView):
             local_instance.delete()
             return Response(status.HTTP_200_OK)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -101,6 +110,7 @@ class Empresas(APIView):
             serializer = EmpresaSerializer(local_instance, many=True)
             return Response(serializer.data)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
@@ -111,6 +121,7 @@ class Empresas(APIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)    
 
 class TipoEventoDetalle(APIView):
@@ -121,6 +132,7 @@ class TipoEventoDetalle(APIView):
                 serializer = TipoEventoSerializer(local_instance)
                 return Response(serializer.data)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status.HTTP_200_OK)
 
@@ -134,6 +146,7 @@ class TipoEventoDetalle(APIView):
                     return Response(serializer.data)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -143,6 +156,7 @@ class TipoEventoDetalle(APIView):
             local_instance.delete()
             return Response(status.HTTP_200_OK)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class TipoEventos(APIView):
@@ -156,6 +170,7 @@ class TipoEventos(APIView):
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)    
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
  
     def post(self, request):
@@ -166,6 +181,7 @@ class TipoEventos(APIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class DepartamentoDetalle(APIView):
@@ -176,6 +192,7 @@ class DepartamentoDetalle(APIView):
                 serializer = DepartamentoSerializer(local_instance)
                 return Response(serializer.data)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status.HTTP_200_OK)
 
@@ -189,6 +206,7 @@ class DepartamentoDetalle(APIView):
                     return Response(serializer.data)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -198,6 +216,7 @@ class DepartamentoDetalle(APIView):
             local_instance.delete()
             return Response(status.HTTP_200_OK)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -212,6 +231,7 @@ class Departamentos(APIView):
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)    
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
  
     def post(self, request):
@@ -222,6 +242,7 @@ class Departamentos(APIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
         
 class UbicacionDetalle(APIView):
@@ -229,10 +250,10 @@ class UbicacionDetalle(APIView):
         try:
             local_instance = Ubicacion.objects.get(id=id)
             if local_instance:
-                print(type(local_instance))
                 serializer = UbicacionSerializer(local_instance)
                 return Response(serializer.data)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status.HTTP_200_OK)
 
@@ -246,6 +267,7 @@ class UbicacionDetalle(APIView):
                     return Response(serializer.data)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -255,6 +277,7 @@ class UbicacionDetalle(APIView):
             local_instance.delete()
             return Response(status.HTTP_200_OK)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class Ubicaciones(APIView):
@@ -269,7 +292,7 @@ class Ubicaciones(APIView):
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)    
         except Exception as ex:
-            print(ex.__dict__)
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
  
     def post(self, request):
@@ -280,6 +303,7 @@ class Ubicaciones(APIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class EmpleadoDetalle(APIView):
@@ -291,21 +315,20 @@ class EmpleadoDetalle(APIView):
             if local_instance:
                 if _data is not None and _data.evento_empleado is not None and \
                     _data.evento_empleado_coordenadas is not None:
-                    print("evento:{}".format(_data.evento_empleado.__str__))
                     local_instance.evento_empleado = _data.evento_empleado
                     _validacion_en_rango = local_instance.evento_empleado.en_rango() 
                     if local_instance.evento_empleado.exitoso:
-                        print("En rango")
+                        logger.debug("En rango")
                     else:
-                        print("Fuera de rango:")
-                        print(local_instance.evento_empleado.__str__)
+                        logger.debug("Fuera de rango:")
+                    logger.debug(local_instance.evento_empleado.__str__)
                     serializer = EventoEmpleadoSerializer(local_instance.evento_empleado)
                     if serializer.is_valid():
                         serializer.save()                        
                 serializer = EmpleadoSerializer(local_instance)
                 return Response(serializer.data)
         except Exception as ex:
-            print(ex.__dict__)
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status.HTTP_200_OK)
 
@@ -319,6 +342,7 @@ class EmpleadoDetalle(APIView):
                     return Response(serializer.data)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -328,6 +352,7 @@ class EmpleadoDetalle(APIView):
             local_instance.delete()
             return Response(status.HTTP_200_OK)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class Empleados(APIView):
@@ -341,6 +366,7 @@ class Empleados(APIView):
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)    
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
  
     def post(self, request):
@@ -351,6 +377,7 @@ class Empleados(APIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
         
 class PerfilDetalle(APIView):
@@ -361,6 +388,7 @@ class PerfilDetalle(APIView):
                 serializer = PerfilSerializer(local_instance)
                 return Response(serializer.data)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status.HTTP_200_OK)
 
@@ -374,6 +402,7 @@ class PerfilDetalle(APIView):
                     return Response(serializer.data)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -383,6 +412,7 @@ class PerfilDetalle(APIView):
             local_instance.delete()
             return Response(status.HTTP_200_OK)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -393,6 +423,7 @@ class Perfiles(APIView):
             serializer = PerfilSerializer(local_instance, many=True)
             return Response(serializer.data)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
         
     def post(self, request):
@@ -403,6 +434,7 @@ class Perfiles(APIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
         
 class UsuarioDetalle(APIView):
@@ -413,6 +445,7 @@ class UsuarioDetalle(APIView):
                 serializer = UsuarioSerializer(local_instance)
                 return Response(serializer.data)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status.HTTP_200_OK)
 
@@ -426,6 +459,7 @@ class UsuarioDetalle(APIView):
                     return Response(serializer.data)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -435,6 +469,7 @@ class UsuarioDetalle(APIView):
             local_instance.delete()
             return Response(status.HTTP_200_OK)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -449,6 +484,7 @@ class Usuarios(APIView):
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)    
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)
         
     def post(self, request):
@@ -459,6 +495,7 @@ class Usuarios(APIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as ex:
+            logger.error(str(ex))
             return Response(status=status.HTTP_400_BAD_REQUEST)    
         
 def error400View(request, exception):

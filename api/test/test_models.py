@@ -1,6 +1,6 @@
 
 """_summary_
-    API Model test
+    EasyBio API Model test
 """
 
 import logging
@@ -9,8 +9,7 @@ from api.models import *
 from api import customfunctions
 
 logger = logging.getLogger(__name__)
-print("iniciando TEST")
-print(logger)
+
 # Create your tests here.
 def init_data_test(self) -> None:
     self.estado = Estado.objects.create(descripcion = "Inicial", color = '0000FF')

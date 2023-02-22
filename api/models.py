@@ -9,7 +9,7 @@ class Estado(models.Model):
     descripcion = models.CharField(max_length=50)
     color = models.CharField(max_length=7)
     def __str__(self):
-        return "%s %s" % (self.descripcion, self.color)
+        return "%s %s %s" % (self.id,self.descripcion, self.color)
         
 class Empresa(models.Model):
     ruc = models.CharField(max_length=13, unique=True)
