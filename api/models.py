@@ -56,11 +56,13 @@ class Departamento(models.Model):
 class Coordenada(models.Model):
     lat = models.CharField(max_length = 20, default = "0.0")
     lon = models.CharField(max_length = 20, default = "0.0")
+
+    def __str__(self):
+        return "%s %s".format(self.lat,self.lon)
     class Meta:
         abstract = True
     
-    def __str__(self):
-        return "Coordenada"
+
 
 # class CoordenadaForm(forms.ModelForm):
 #     class Meta:
@@ -158,7 +160,7 @@ class EventoEmpleado(models.Model):
                                related_name='evento_empleado_tipo_evento')
     fecha = models.DateField()
     hora = models.TimeField()
-    coordenada_evento = models.Field(Coordenada())
+    coordenada_evento = models.Field(Coordenada)
     distancia_actual = models.IntegerField()
     dispositivo = models.CharField(max_length=20, null=False)
     ubicacion = models.ForeignKey(Ubicacion, on_delete = models.RESTRICT, null = False,

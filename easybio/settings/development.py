@@ -12,13 +12,15 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from .base import *
 from pathlib import Path
 import os
+from decouple import config
 
-SECRET_KEY = 'django-insecure-50hi_kaa#)qxstv(yh#j3$012v@_zqu7!hmr@%n@ph=zlt1gdq'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG =  config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [config('ALLOWED_HOSTS', 
+                       default='*')]
 
 
 
@@ -27,11 +29,11 @@ ALLOWED_HOSTS = ['*']
 
 DATABASES = {
         'default': {
-            'ENGINE':'djongo',
-            'NAME':'easybiodb',
-            'ENFORCE_SCHEMA': True,
+            'ENGINE':config('DB_ENGINE'),
+            'NAME':config('DB_NAME'),
+            'ENFORCE_SCHEMA': config('DB_ENFORCE_SCHEMA', default=True, cast=bool),
             'CLIENT': {
-                'host': 'mongodb://easybiousr:ClaveEasyBio2023@localhost:27017'
+                'host': config('DB_URL')
             }             
         }
 }
