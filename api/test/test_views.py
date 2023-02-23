@@ -74,7 +74,7 @@ def init_data_test(self) -> None:
         perfil = self.perfil,
         estado = self.estado
     )
-    
+
 
 class EstadoViewTestCase(APITestCase):
     def setUp(self) -> None:
@@ -84,13 +84,16 @@ class EstadoViewTestCase(APITestCase):
     def test_estado_detalle_get(self):
         url = reverse("api:estado-detalle",kwargs={'id':self.estado.id})
         r = self.client.get(url)
-        self.assertContains(r,"Inicial")
+        current_objects= Estado.objects.get(pk=self.estado.id)
+        serializer = EstadoSerializer(current_objects)
+        self.assertEqual(r.data,serializer.data)
+        self.assertEqual(r.status_code,status.HTTP_200_OK)
  
     def test_estado_detalle_get_error(self):
         url = reverse("api:estado-detalle",kwargs={'id':1000})
         r = self.client.get(url)
         logger.debug(r.status_code)
-        self.assertEqual(r.status_code,status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(r.status_code,status.HTTP_404_NOT_FOUND)
 
     def test_estado_detalle_put(self):
         url = reverse("api:estado-detalle",kwargs={'id':self.estado.id})
@@ -108,7 +111,7 @@ class EstadoViewTestCase(APITestCase):
         self.estado = Estado.objects.create(descripcion = "Desactivado", color = '0000FF')
         url = reverse("api:estado-detalle",kwargs={'id':self.estado.id})
         r = self.client.delete(url)
-        self.assertEqual(r.status_code, status.HTTP_200_OK)
+        self.assertEqual(r.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_estado_detalle_delete_error(self):
         url = reverse("api:estado-detalle",kwargs={'id':1000})
@@ -118,13 +121,19 @@ class EstadoViewTestCase(APITestCase):
     def test_estados_get(self):
         url = reverse("api:estado")
         r = self.client.get(url)
-        self.assertContains(r,"Inicial")
+        current_objects= Estado.objects.all()
+        serializer = EstadoSerializer(current_objects,  many =True)
+        self.assertEqual(r.data,serializer.data)
+        self.assertEqual(r.status_code,status.HTTP_200_OK)
             
     def test_estados_post(self):
         url = reverse("api:estado")
         self.estado.descripcion = 'Adicional'
         serializer = EstadoSerializer(self.estado, many = False)
         r = self.client.post(url, serializer.data)
+        self.estado = Estado.objects.get(pk=r.data["id"])
+        serializer = EstadoSerializer(self.estado, many = False)
+        self.assertEqual(r.data,serializer.data)
         self.assertEqual(r.status_code,status.HTTP_201_CREATED)
 
     def test_estados_post_error(self):
@@ -151,3 +160,7 @@ class EmpresaTestCase(APITestCase):
         url = reverse("api:empresa-detalle",kwargs={'id':self.empresa.id})
         r = self.client.get(url)
         self.assertContains(r,"Empresa Uno")                
+
+#Llenar datos de prueba
+# e= EstadoViewTestCase()
+# e.setUp()
