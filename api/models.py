@@ -6,7 +6,7 @@ from api import customfunctions as cf
 logger = logging.getLogger(__name__)
 
 class Estado(models.Model):
-    descripcion = models.CharField(max_length=50)
+    descripcion = models.CharField(max_length=50, null=False )
     color = models.CharField(max_length=7)
     def __str__(self):
         return "%s %s %s" % (self.id,self.descripcion, self.color)
@@ -59,9 +59,6 @@ class Departamento(models.Model):
 class Coordenada(models.Model):
     lat = models.CharField(max_length = 20, default = "0.0")
     lon = models.CharField(max_length = 20, default = "0.0")
-
-    def __str__(self):
-        return "%s %s".format(self.lat,self.lon)
     class Meta:
         abstract = True
     

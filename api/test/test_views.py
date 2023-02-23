@@ -102,13 +102,36 @@ class EstadoViewTestCase(APITestCase):
         url = reverse("api:estado-detalle",kwargs={'id':1000})
         serializer = EstadoSerializer(self.estado, many = False)
         r = self.client.put(url, serializer.data)
-        self.assertEqual(r.status_code,status.HTTP_200_OK)
+        self.assertEqual(r.status_code,status.HTTP_400_BAD_REQUEST)
             
+    def test_estado_detalle_delete(self):
+        self.estado = Estado.objects.create(descripcion = "Desactivado", color = '0000FF')
+        url = reverse("api:estado-detalle",kwargs={'id':self.estado.id})
+        r = self.client.delete(url)
+        self.assertEqual(r.status_code, status.HTTP_200_OK)
+
+    def test_estado_detalle_delete_error(self):
+        url = reverse("api:estado-detalle",kwargs={'id':1000})
+        r = self.client.delete(url)
+        self.assertEqual(r.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_estados_get(self):
         url = reverse("api:estado")
         r = self.client.get(url)
         self.assertContains(r,"Inicial")
             
+    def test_estados_post(self):
+        url = reverse("api:estado")
+        self.estado.descripcion = 'Adicional'
+        serializer = EstadoSerializer(self.estado, many = False)
+        r = self.client.post(url, serializer.data)
+        self.assertEqual(r.status_code,status.HTTP_201_CREATED)
+
+    def test_estados_post_error(self):
+        url = reverse("api:estado")
+        r = self.client.post(url, None)
+        self.assertEqual(r.status_code,status.HTTP_400_BAD_REQUEST)
+
     # puppies = Puppy.objects.all()
     # serializer = PuppySerializer(puppies, many=True)
     # self.assertEqual(response.data, serializer.data)
