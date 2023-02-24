@@ -5,9 +5,11 @@ import logging
 from rest_framework.test import APITestCase
 from rest_framework.response import Response
 from rest_framework import status
+from django.utils.http import urlencode
 from django.urls import reverse
 from api.models import *
 from api.serializer import *
+from django.db.models.query_utils import Q
 
 logger = logging.getLogger(__name__)
 
@@ -146,20 +148,40 @@ class EstadoViewTestCase(APITestCase):
     # self.assertEqual(response.data, serializer.data)
     # self.assertEqual(response.status_code, status.HTTP_200_OK)        
                
-class EmpresaTestCase(APITestCase):
+class DepartamentoTestCase(APITestCase):
     def setUp(self) -> None:
         init_data_test(self=self)
         return super().setUp()
     
-    def test_empresa_list(self):
-        url = reverse("api:empresa")
+    def test_departamentos_get(self):
+        url = reverse("api:departamento")
+        url = "{}?parent_id={}".format(url,self.empresa.id)
+        # + '?' + urlencode({'parent_id':self.empresa.id})
         r = self.client.get(url)
-        self.assertContains(r,"Empresa Uno")
-        
-    def test_empresa_detalle(self):
-        url = reverse("api:empresa-detalle",kwargs={'id':self.empresa.id})
-        r = self.client.get(url)
-        self.assertContains(r,"Empresa Uno")                
+        logger.debug("\n\n RDATA")
+        logger.debug(r)
+        current_objects= Departamento.objects.filter(Q(empresa__id=self.empresa.id))
+        serializer = DepartamentoSerializer(current_objects,  many =True)
+        logger.debug("\n\n SDATA")
+        logger.debug(serializer.data)
+        self.assertEqual(r.data,serializer.data)
+        self.assertEqual(r.status_code,status.HTTP_200_OK)
+            
+    def test_departamento_post(self):
+        url = reverse("api:departamento")
+        self.departamento.descripcion = 'Adicional'
+        serializer = DepartamentoSerializer(self.departamento, many = False)
+        r = self.client.post(url, serializer.data, format="json")
+        self.departamento = Departamento.objects.get(pk=r.data["id"])
+        serializer = DepartamentoSerializer(self.departamento, many = False)
+        self.assertEqual(r.data,serializer.data)
+        self.assertEqual(r.status_code,status.HTTP_201_CREATED)
+
+    def test_departamento_post_error(self):
+        url = reverse("api:departamento")
+        r = self.client.post(url, None)
+        self.assertEqual(r.status_code,status.HTTP_400_BAD_REQUEST)
+
 
 #Llenar datos de prueba
 # e= EstadoViewTestCase()
