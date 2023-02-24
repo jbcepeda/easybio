@@ -71,7 +71,7 @@ class GenericObjects2(APIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class GenericObjects(APIView):
-    def __init__(self, object_class, serializer_class,kwargs):
+    def __init__(self, object_class, serializer_class, kwargs):
         self.object_class = object_class
         self.serializer_class = serializer_class 
         self.kwargs = kwargs
@@ -79,10 +79,11 @@ class GenericObjects(APIView):
     def get(self, request):
         try:
             parent_id = request.GET.get('parent_id', None)
+            logger.debug("\n\n PARENT_ID {} {}".format(parent_id, self.kwargs))
             if parent_id is not None and self.kwargs is not None:
                 self.kwargs.update({self.kwargs[0]: parent_id})
                 logger.debug(self.kwargs)
-                local_instance = TipoEvento.objects.filter(Q(self.kwargs))
+                local_instance = self.object_class.objects.filter(Q(self.kwargs))
             else:
                 local_instance = self.object_class.objects.all()
             serializer = self.serializer_class(local_instance, many = True)
@@ -109,7 +110,7 @@ class EstadoDetalle(GenericObjectDetail):
 
 class Estados(GenericObjects):
     def __init__(self):
-        super().__init__(Estado, EstadoSerializer)
+        super().__init__(object_class=Estado, serializer_class=EstadoSerializer, kwargs=None)
 
 class EmpresaDetalle(GenericObjectDetail):
     def __init__(self):
@@ -117,15 +118,15 @@ class EmpresaDetalle(GenericObjectDetail):
 
 class Empresas(GenericObjects):
     def __init__(self):
-        super().__init__(Empresa, EmpresaSerializer)
+        super().__init__(object_class=Empresa, serializer_class=EmpresaSerializer, kwargs=None)
   
 class TipoEventoDetalle(GenericObjectDetail):
     def __init__(self):
-        super().__init__(TipoEvento, TipoEventoSerializer)
+        super().__init__(object_class=TipoEvento, serializer_class=TipoEventoSerializer)
 
 class TipoEventos(GenericObjects):
     def __init__(self):
-        super().__init__(self, Estado, EstadoSerializer, {'empresa__id':0})
+        super().__init__(self, TipoEvento, TipoEventoSerializer, {'empresa__id':0})
 
 class DepartamentoDetalle(GenericObjectDetail):
     def __init__(self):
@@ -133,7 +134,8 @@ class DepartamentoDetalle(GenericObjectDetail):
 
 class Departamentos(GenericObjects):
     def __init__(self):
-        super().__init__(self, Departamento, DepartamentoSerializer, {'empresa__id':0})
+        super().__init__(object_class=Departamento, serializer_class = DepartamentoSerializer,
+                          kwargs={'empresa__id':0})
 
 class UbicacionDetalle(GenericObjectDetail):
     def __init__(self):
