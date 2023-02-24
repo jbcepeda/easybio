@@ -46,44 +46,21 @@ class GenericObjectDetail(APIView):
             logger.error(str(ex), extra={'className': self.__class__.__name__})
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-class GenericObjects2(APIView):
-    def __init__(self, object_class, serializer_class):
-        self.object_class = object_class
-        self.serializer_class = serializer_class 
-
-    def get(self, request):
-        try:
-            local_instance = self.object_class.objects.all()
-            serializer = self.serializer_class(local_instance, many = True)
-            return Response(serializer.data, status = status.HTTP_200_OK)
-        except Exception as ex:
-            logger.error(str(ex), extra={'className': self.__class__.__name__})
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    def post(self, request):
-        try:
-            serializer = self.serializer_class(data = request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status = status.HTTP_201_CREATED)
-        except Exception as ex:
-            logger.error(str(ex), extra={'className': self.__class__.__name__})
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
 class GenericObjects(APIView):
     def __init__(self, object_class, serializer_class, kwargs):
         self.object_class = object_class
         self.serializer_class = serializer_class 
-        self.kwargs = kwargs
+        self._kwargs = kwargs
 
     def get(self, request):
         try:
             parent_id = request.GET.get('parent_id', None)
-            logger.debug("\n\n PARENT_ID {} {}".format(parent_id, self.kwargs))
-            if parent_id is not None and self.kwargs is not None:
-                self.kwargs.update({self.kwargs[0]: parent_id})
-                logger.debug(self.kwargs)
-                local_instance = self.object_class.objects.filter(Q(self.kwargs))
+            if self._kwargs is not None:
+                if parent_id is not None:
+                    self._kwargs.update({list(self._kwargs.keys())[0]: parent_id})
+                    local_instance = self.object_class.objects.filter(Q(**self._kwargs))
+                else:
+                    return Response(status=status.HTTP_404_NOT_FOUND)
             else:
                 local_instance = self.object_class.objects.all()
             serializer = self.serializer_class(local_instance, many = True)
@@ -101,8 +78,6 @@ class GenericObjects(APIView):
         except Exception as ex:
             logger.error(str(ex), extra={'className': self.__class__.__name__})
         return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
     
 class EstadoDetalle(GenericObjectDetail):
     def __init__(self):
@@ -126,7 +101,7 @@ class TipoEventoDetalle(GenericObjectDetail):
 
 class TipoEventos(GenericObjects):
     def __init__(self):
-        super().__init__(self, TipoEvento, TipoEventoSerializer, {'empresa__id':0})
+        super().__init__(object_class=TipoEvento, serializer_class=TipoEventoSerializer, kwargs={'empresa__id':0})
 
 class DepartamentoDetalle(GenericObjectDetail):
     def __init__(self):
@@ -141,82 +116,28 @@ class UbicacionDetalle(GenericObjectDetail):
     def __init__(self):
         super().__init__(Departamento, DepartamentoSerializer)
 
+class Ubicaciones(GenericObjects):
+    def __init__(self):
+        super().__init__(object_class=Ubicacion, serializer_class = UbicacionSerializer,
+                          kwargs={'empresa__id':0})
+        
 class PerfilDetalle(GenericObjectDetail):
     def __init__(self):
         super().__init__(Perfil, PerfilSerializer)
 
+class Perfiles(GenericObjects):
+    def __init__(self):
+        super().__init__(object_class=Perfil, serializer_class = PerfilSerializer,
+                          kwargs=None)
+        
 class UsuarioDetalle(GenericObjectDetail):
     def __init__(self):
         super().__init__(Usuario, UsuarioSerializer)
                         
-class TipoEventos2(APIView):
-    def get(self, request):
-        try:
-            parent_id = request.GET.get('parent_id', None)
-            if parent_id is not None:
-                local_instance = TipoEvento.objects.filter(Q(empleado__id=parent_id))
-                serializer = TipoEventoSerializer(local_instance, many=True)
-                return Response(serializer.data)
-        except Exception as ex:
-            logger.error(str(ex), extra={'className': self.__class__.__name__})
-        return Response(status=status.HTTP_400_BAD_REQUEST)
- 
-    def post(self, request):
-        try:
-            serializer = TipoEventoSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-        except Exception as ex:
-            logger.error(str(ex), extra={'className': self.__class__.__name__})
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-class Departamentos2(APIView):
-    def get(self, request):
-        try:
-            parent_id = request.GET.get('parent_id', None)
-            if parent_id is not None:
-                local_instance = Departamento.objects.filter(Q(empresa__id=parent_id))
-                serializer = DepartamentoSerializer(local_instance, many=True)
-                return Response(serializer.data)
-        except Exception as ex:
-            logger.error(str(ex), extra={'className': self.__class__.__name__})
-        return Response(status=status.HTTP_400_BAD_REQUEST)
- 
-    def post(self, request):
-        try:
-            serializer = DepartamentoSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-        except Exception as ex:
-            logger.error(str(ex), extra={'className': self.__class__.__name__})
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-        
-
-class Ubicaciones(APIView):
-    def get(self, request):
-        try:
-            parent_id = request.GET.get('parent_id', None)
-            if parent_id is not None:
-                local_instance = Ubicacion.objects.filter(Q(empresa__id=parent_id))
-                #local_instance = Ubicacion.objects.all()               
-                serializer = UbicacionSerializer(local_instance, many=True)
-                return Response(serializer.data)
-        except Exception as ex:
-            logger.error(str(ex), extra={'className': self.__class__.__name__})
-        return Response(status=status.HTTP_400_BAD_REQUEST)
- 
-    def post(self, request):
-        try:
-            serializer = UbicacionSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-        except Exception as ex:
-            logger.error(str(ex), extra={'className': self.__class__.__name__})
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+class Usuarios(GenericObjects):
+    def __init__(self):
+        super().__init__(object_class=Usuario, serializer_class = UsuarioSerializer,
+                          kwargs={'empleado__ubicacion__empresa__id':0})
 
 class EmpleadoDetalle(APIView):
     def get(self, request, id):
@@ -284,49 +205,7 @@ class Empleados(APIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         except Exception as ex:
             logger.error(str(ex), extra={'className': self.__class__.__name__})
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-        
-class Perfiles(APIView):
-    def get(self, request):
-        try:
-            local_instance = Perfil.objects.all()
-            serializer = PerfilSerializer(local_instance, many=True)
-            return Response(serializer.data)
-        except Exception as ex:
-            logger.error(str(ex), extra={'className': self.__class__.__name__})
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        
-    def post(self, request):
-        try:
-            serializer = PerfilSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-        except Exception as ex:
-            logger.error(str(ex), extra={'className': self.__class__.__name__})
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-        
-class Usuarios(APIView):
-    def get(self, request):
-        try:
-            parent_id = request.GET.get('parent_id', None)
-            if parent_id is not None:
-                local_instance = Usuario.objects.filter(Q(empleado__departamento__empresa__id=parent_id))
-                serializer = UsuarioSerializer(local_instance, many=True)
-                return Response(serializer.data)
-        except Exception as ex:
-            logger.error(str(ex), extra={'className': self.__class__.__name__})
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-        
-    def post(self, request):
-        try:
-            serializer = UsuarioSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-        except Exception as ex:
-            logger.error(str(ex), extra={'className': self.__class__.__name__})
-        return Response(status=status.HTTP_400_BAD_REQUEST)    
+        return Response(status=status.HTTP_400_BAD_REQUEST)        
         
 def error400View(request, exception):
     return render(request, 'error_404.html', status = 400)
