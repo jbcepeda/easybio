@@ -262,7 +262,6 @@ class EventoEmpleadoTestCase(APITestCase):
         )
         _result = self.evento_empleado.en_rango()
         self.empleado.evento_empleado = self.evento_empleado
-        logger.debug(self.empleado.evento_empleado.__str__)
         self.assertEqual(_result and self.evento_empleado.intento_exitoso,True)
 
     def test_evento_empleado_fuera_de_rango(self):

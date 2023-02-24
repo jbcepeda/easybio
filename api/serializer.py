@@ -46,7 +46,6 @@ class EmpleadoSerializer(serializers.ModelSerializer):
     departamento = DepartamentoSerializer(many=False, read_only=True)
     ubicacion = UbicacionSerializer(many=False, read_only=True)
     estado = EstadoSerializer(many=False, read_only=True)
-    evento_empleado = EventoEmpleadoSerializer(many=False, read_only=True)
 
     class Meta:
         model = Empleado

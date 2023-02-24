@@ -9,7 +9,8 @@ class Estado(models.Model):
     descripcion = models.CharField(max_length=50, null=False )
     color = models.CharField(max_length=7)
     def __str__(self):
-        return "%s %s %s" % (self.id,self.descripcion, self.color)
+        return str([f"attribute: {k}    value: {v}" for k, v in self.__dict__.items()])
+    # "%s %s %s" % (self.id,self.descripcion, self.color)
         
 class Empresa(models.Model):
     ruc = models.CharField(max_length=13, unique=True)
@@ -109,13 +110,13 @@ class Empleado(models.Model):
     )
     estado = models.ForeignKey(Estado, on_delete=models.RESTRICT, null=False,
                                  related_name='empleado_estado')
-    @property
-    def evento_empleado(self) -> any:
-        return self._evento_empleado
+    # @property
+    # def evento_empleado(self) -> any:
+    #     return self._evento_empleado
     
-    @evento_empleado.setter
-    def evento_empleado(self, value)-> None:
-        self._evento_empleado = value
+    # @evento_empleado.setter
+    # def evento_empleado(self, value)-> None:
+    #     self._evento_empleado = value
       
     def __str__(self):
         return "%s %s %s %s %s" % (self.departamento.empresa.ruc, 

@@ -17,5 +17,7 @@ urlpatterns = [
     path('empleado/', views.Empleados.as_view(), name='empleado'),    
     path('usuario/<id>/', views.UsuarioDetalle.as_view(), name='usuario-detalle'),
     path('usuario/', views.Usuarios.as_view(), name='usuario'),
+    path('tipo-evento/<id>/', views.TipoEventoDetalle.as_view(), name='tipo-evento-detalle'),
+    path('tipo-evento/', views.TipoEventos.as_view(), name='tipo-evento'),
 ]
 
