@@ -138,74 +138,14 @@ class Usuarios(GenericObjects):
     def __init__(self):
         super().__init__(object_class=Usuario, serializer_class = UsuarioSerializer,
                           kwargs={'empleado__ubicacion__empresa__id':0})
-
-class EmpleadoDetalle(APIView):
-    def get(self, request, id):
-        try:
-            _data = request.data
-            _validacion_en_rango = False
-            local_instance = Empleado.objects.get(id=id)
-            if local_instance:
-                if _data is not None and _data.evento_empleado is not None and \
-                    _data.evento_empleado_coordenadas is not None:
-                    local_instance.evento_empleado = _data.evento_empleado
-                    _validacion_en_rango = local_instance.evento_empleado.en_rango() 
-                    if local_instance.evento_empleado.exitoso:
-                        logger.debug("En rango")
-                    else:
-                        logger.debug("Fuera de rango:")
-                    logger.debug(local_instance.evento_empleado.__str__)
-                    serializer = EventoEmpleadoSerializer(local_instance.evento_empleado)
-                    if serializer.is_valid():
-                        serializer.save()                        
-                serializer = EmpleadoSerializer(local_instance)
-                return Response(serializer.data)
-        except Exception as ex:
-            logger.error(str(ex), extra={'className': self.__class__.__name__})
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def put(self, request, id):
-        try:
-            local_instance = Empleado.objects.get(pk=id)
-            if local_instance:
-                serializer = EmpleadoSerializer(local_instance, data=request.data)
-                if serializer.is_valid():
-                    serializer.save()
-                    return Response(serializer.data)
-        except Exception as ex:
-            logger.error(str(ex), extra={'className': self.__class__.__name__})
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, id):
-        try:
-            local_instance = Empleado.objects.get(pk=id)
-            local_instance.delete()
-            return Response(status.HTTP_200_OK)
-        except Exception as ex:
-            logger.error(str(ex), extra={'className': self.__class__.__name__})
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-class Empleados(APIView):
-    def get(self, request):
-        try:
-            parent_id = request.GET.get('parent_id', None)
-            if parent_id is not None:
-                local_instance = Empleado.objects.filter(Q(departamento__empresa__id=parent_id))
-                serializer = EmpleadoSerializer(local_instance, many=True)
-                return Response(serializer.data)
-        except Exception as ex:
-            logger.error(str(ex), extra={'className': self.__class__.__name__})
-        return Response(status=status.HTTP_400_BAD_REQUEST)
- 
-    def post(self, request):
-        try:
-            serializer = EmpleadoSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-        except Exception as ex:
-            logger.error(str(ex), extra={'className': self.__class__.__name__})
-        return Response(status=status.HTTP_400_BAD_REQUEST)        
+class EmpleadoDetalle(GenericObjectDetail):
+    def __init__(self):
+        super().__init__(Empleado, EmpleadoSerializer)
+                        
+class Empleados(GenericObjects):
+    def __init__(self):
+        super().__init__(object_class=Empleado, serializer_class = EmpleadoSerializer,
+                          kwargs={'departamento__empresa__id':0})
         
 def error400View(request, exception):
     return render(request, 'error_404.html', status = 400)

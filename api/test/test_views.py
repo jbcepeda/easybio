@@ -10,179 +10,224 @@ from django.urls import reverse
 from api.models import *
 from api.serializer import *
 from django.db.models.query_utils import Q
+from api.test.utils import CustomIniDataClass
+from inspect import currentframe
 
 logger = logging.getLogger(__name__)
 
-def init_data_test(self) -> None:
-    self.estado = Estado.objects.create(descripcion = "Inicial", color = '0000FF')
-    self.empresa = Empresa.objects.create(
-        ruc = "1111111111111",
-        razon_social = "Empresa Uno",
-        nombre_comercial = "Empresa uno comercial",
-        direccion = "direccion uno",
-        telefono = "telefono uno",
-        nombres_contacto = "nombres contacto uno",
-        cargo_contacto = "cargo contacto uno",
-        email_contacto = "prueba@uno.com",
-        telefono_contacto = "2222221",
-        inicio_contrato = "2023-01-01",
-        fin_contrato = "2023-12-31",
-        estado = self.estado
-        )
+class GenericViewTestCase(APITestCase, CustomIniDataClass):
+    # def __init__(self, object_class, serializer_class, 
+    #             instance_class, reverse_name_detail,
+    #             reverse_name_list, serialized_data_object):
+    #     self.object_class = object_class
+    #     self.serializer_class = serializer_class
+    #     self.reverse_name_detail = reverse_name_detail
+    #     self.reverse_name_list = reverse_name_list
+    #     self.instance_class = instance_class
+    #     self.serialized_data_object = serialized_data_object
+    #     super().__init__()
 
-    self.tipo_evento = TipoEvento.objects.create(
-        empresa = self.empresa,
-        descripcion = "Inicio Jornada laboral",
-        orden = 1,
-        estado = self.estado
-    )
-
-    self.departamento = Departamento.objects.create(
-        empresa = self.empresa,
-        descripcion = "Sistemas",
-        estado = self.estado
-    )
-
-    self.ubicacion = Ubicacion.objects.create(
-        empresa = self.empresa,
-        descripcion = "RPDMQ",
-        tipo_dato =  "point",
-        coordenadas = [{"lat":-0.19041117621469852, "lon":-78.48837800323963}],
-        distancia_max =  20,
-        estado = self.estado
-    )
-    
-    self.empleado = Empleado.objects.create(
-        cedula = '0600000000',
-        nombres = 'Benjamin',
-        apellidos = 'Cepeda',
-        foto = None,
-        celular = '0999999999',
-        departamento = self.departamento,
-        ubicacion = self.ubicacion,
-        estado = self.estado
-    )
-    
-    self.perfil = Perfil.objects.create(
-        descripcion = 'Empleado',
-        es_administrador = 0,
-        estado = self.estado
-    )
-    
-    self.usuario =  Usuario.objects.create(
-        nombre_usuario = 'bcepeda',
-        empleado = self.empleado,
-        clave = '1234',
-        perfil = self.perfil,
-        estado = self.estado
-    )
-
-
-class EstadoViewTestCase(APITestCase):
-    def setUp(self) -> None:
-        init_data_test(self=self)
+    def setUp(self, object_class, serializer_class, 
+                reverse_name_detail, reverse_name_list,
+                serialized_data_object, reverse_extra_param,
+                filter_condition,
+                parent_instance_class)-> None:
+        self.init_data_test()
+        self.object_class = object_class
+        self.serializer_class = serializer_class
+        self.reverse_name_detail = reverse_name_detail
+        self.reverse_name_list = reverse_name_list
+        self.instance_class = self.object_class.objects.all().first()
+        self.serialized_data_object = serialized_data_object        
+        self.reverse_extra_param = reverse_extra_param,
+        self.filter_condition = filter_condition
+        self.parent_instance_class = parent_instance_class
         return super().setUp()    
 
-    def test_estado_detalle_get(self):
-        url = reverse("api:estado-detalle",kwargs={'id':self.estado.id})
+    def generic_test_detalle_get(self):
+        logger.debug(str(self.object_class))
+        url = reverse(self.reverse_name_detail, kwargs={'id':self.instance_class.id})
         r = self.client.get(url)
-        current_objects= Estado.objects.get(pk=self.estado.id)
-        serializer = EstadoSerializer(current_objects)
+        current_objects= self.object_class.objects.get(pk=self.instance_class.id)
+        serializer = self.serializer_class(current_objects)
         self.assertEqual(r.data,serializer.data)
         self.assertEqual(r.status_code,status.HTTP_200_OK)
  
-    def test_estado_detalle_get_error(self):
-        url = reverse("api:estado-detalle",kwargs={'id':1000})
+    def generic_test_detalle_get_error(self):
+        logger.debug(str(self.object_class))
+        url = reverse(self.reverse_name_detail, kwargs={'id':1000})
         r = self.client.get(url)
-        logger.debug(r.status_code)
         self.assertEqual(r.status_code,status.HTTP_404_NOT_FOUND)
 
-    def test_estado_detalle_put(self):
-        url = reverse("api:estado-detalle",kwargs={'id':self.estado.id})
-        serializer = EstadoSerializer(self.estado, many = False)
-        r = self.client.put(url, serializer.data)
+    def generic_test_detalle_put(self):
+        logger.debug(str(self.object_class))
+        url = reverse(self.reverse_name_detail, kwargs={'id':self.instance_class.id})
+        serializer = self.serializer_class(self.instance_class, many = False)
+        r = self.client.put(url, serializer.data, format="json")
         self.assertEqual(r.status_code,status.HTTP_200_OK)
 
-    def test_estado_detalle_put_error(self):
-        url = reverse("api:estado-detalle",kwargs={'id':1000})
-        serializer = EstadoSerializer(self.estado, many = False)
-        r = self.client.put(url, serializer.data)
+    def generic_test_detalle_put_error(self):
+        logger.debug(str(self.object_class))
+        url = reverse(self.reverse_name_detail, kwargs={'id':1000})
+        serializer = self.serializer_class(self.instance_class, many = False)
+        r = self.client.put(url, serializer.data, format="json")
         self.assertEqual(r.status_code,status.HTTP_400_BAD_REQUEST)
             
-    def test_estado_detalle_delete(self):
-        self.estado = Estado.objects.create(descripcion = "Desactivado", color = '0000FF')
-        url = reverse("api:estado-detalle",kwargs={'id':self.estado.id})
+    def generic_test_detalle_delete(self):
+        logger.debug(str(self.object_class))
+        self.instance_class = self.object_class.objects.create(**self.serialized_data_object)
+        url = reverse(self.reverse_name_detail, kwargs={'id':self.instance_class.id})
         r = self.client.delete(url)
         self.assertEqual(r.status_code, status.HTTP_204_NO_CONTENT)
 
-    def test_estado_detalle_delete_error(self):
-        url = reverse("api:estado-detalle",kwargs={'id':1000})
+    def generic_test_detalle_delete_error(self):
+        logger.debug(str(self.object_class))
+        url = reverse(self.reverse_name_detail, kwargs={'id':1000})
         r = self.client.delete(url)
         self.assertEqual(r.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_estados_get(self):
-        url = reverse("api:estado")
+    def generic_test_listados_get(self):
+        logger.debug(str(self.object_class))
+        url = reverse(self.reverse_name_list)
+        if self.reverse_extra_param and self.filter_condition and self.parent_instance_class:
+            _parent_instance = self.parent_instance_class.objects.all().first()
+            url = "{}?parent_id={}".format(url,_parent_instance.id)
+            self.filter_condition.update({list(self.filter_condition.keys())[0]: _parent_instance.id})
+            current_objects= self.object_class.objects.filter(Q(**self.filter_condition))
+        else:
+            current_objects= self.object_class.objects.all()            
         r = self.client.get(url)
-        current_objects= Estado.objects.all()
-        serializer = EstadoSerializer(current_objects,  many =True)
+        serializer = self.serializer_class(current_objects,  many =True)
         self.assertEqual(r.data,serializer.data)
         self.assertEqual(r.status_code,status.HTTP_200_OK)
             
-    def test_estados_post(self):
-        url = reverse("api:estado")
-        self.estado.descripcion = 'Adicional'
-        serializer = EstadoSerializer(self.estado, many = False)
-        r = self.client.post(url, serializer.data)
-        self.estado = Estado.objects.get(pk=r.data["id"])
-        serializer = EstadoSerializer(self.estado, many = False)
+    def generic_test_post(self):
+        logger.debug(str(self.object_class))
+        url = reverse(self.reverse_name_list)
+        self.instance_class = self.object_class(**self.serialized_data_object)
+        serializer = self.serializer_class(self.instance_class, many = False)
+        r = self.client.post(url, serializer.data, format="json")
+        self.instance_class = self.object_class.objects.get(pk=r.data["id"])
+        serializer = self.serializer_class(self.instance_class, many = False)
         self.assertEqual(r.data,serializer.data)
         self.assertEqual(r.status_code,status.HTTP_201_CREATED)
 
-    def test_estados_post_error(self):
-        url = reverse("api:estado")
+    def generic_test_post_error(self):
+        logger.debug(str(self.object_class))
+        url = reverse(self.reverse_name_list)
         r = self.client.post(url, None)
         self.assertEqual(r.status_code,status.HTTP_400_BAD_REQUEST)
+
+class EstadoViewTestCase(GenericViewTestCase):
+    def setUp(self):
+        super().setUp(object_class = Estado, serializer_class = EstadoSerializer,
+                    reverse_name_detail = "api:estado-detalle", 
+                    reverse_name_list = "api:estado",
+                    serialized_data_object = {"descripcion": "Final", "color": '00FF00',},
+                    reverse_extra_param=False, 
+                    filter_condition=None,
+                    parent_instance_class=None
+                    )
+        
+    def test_detalle_get(self): self.generic_test_detalle_get()
+
+    def test_detalle_get_error(self): self.generic_test_detalle_get_error()
+
+    def test_detalle_put(self): self.generic_test_detalle_put()
+
+    def test_detalle_put_error(self): self.generic_test_detalle_put_error()
+
+    def test_detalle_delete(self): self.generic_test_detalle_delete()
+
+    def test_detalle_delete_error(self): self.generic_test_detalle_delete_error()
+
+    def test_listados_get(self): self.generic_test_listados_get()
+
+    def test_post(self): self.generic_test_post()
+
+    def test_post_error(self): self.generic_test_post_error()
+
+class DepartamentoViewTestCase(GenericViewTestCase):
+    def setUp(self):
+        super().setUp(object_class = Departamento, serializer_class = DepartamentoSerializer,
+                    reverse_name_detail = "api:departamento-detalle", 
+                    reverse_name_list = "api:departamento",
+                    serialized_data_object = {
+                        "empresa_id":1,
+                        "descripcion": "Talento Humano",
+                        "estado_id": 1,
+                        },
+                    reverse_extra_param=True, 
+                    filter_condition={"empresa__id":0},
+                    parent_instance_class=Empresa
+                    )
+        
+    def test_detalle_get(self): self.generic_test_detalle_get()
+
+    def test_detalle_get_error(self): self.generic_test_detalle_get_error()
+
+    def test_detalle_put(self): self.generic_test_detalle_put()
+
+    def test_detalle_put_error(self): self.generic_test_detalle_put_error()
+
+    def test_detalle_delete(self): self.generic_test_detalle_delete()
+
+    def test_detalle_delete_error(self): self.generic_test_detalle_delete_error()
+
+    def test_listados_get(self): self.generic_test_listados_get()
+
+    def test_post(self): self.generic_test_post()
+
+    def test_post_error(self): self.generic_test_post_error()
+
+class EmpresaViewTestCase(GenericViewTestCase):
+    def setUp(self):
+        super().setUp(object_class = Empresa, serializer_class = EmpresaSerializer,
+                    reverse_name_detail = "api:empresa-detalle", 
+                    reverse_name_list = "api:empresa",
+                    serialized_data_object = {
+                        "ruc": "2222222222222",
+                        "razon_social": "Empresa Dos",
+                        "nombre_comercial": "Empresa Dos comercial",
+                        "direccion": "direccion dos",
+                        "telefono": "telefono dos",
+                        "nombres_contacto": "nombres contacto dos",
+                        "cargo_contacto": "cargo contacto dos",
+                        "email_contacto": "prueba@dos.com",
+                        "telefono_contacto": "2222222",
+                        "inicio_contrato": "2023-01-01",
+                        "fin_contrato": "2023-12-31",
+                        "estado_id": 1,
+                        },
+                    reverse_extra_param=False, 
+                    filter_condition=None,
+                    parent_instance_class=None
+                    )
+        
+    def test_detalle_get(self): self.generic_test_detalle_get()
+
+    def test_detalle_get_error(self): self.generic_test_detalle_get_error()
+
+    def test_detalle_put(self): self.generic_test_detalle_put()
+
+    def test_detalle_put_error(self): self.generic_test_detalle_put_error()
+
+    def test_detalle_delete(self): self.generic_test_detalle_delete()
+
+    def test_detalle_delete_error(self): self.generic_test_detalle_delete_error()
+
+    def test_listados_get(self): self.generic_test_listados_get()
+
+    def test_post(self): self.generic_test_post()
+
+    def test_post_error(self): self.generic_test_post_error()
+
+#Llenar datos de prueba
+# e= EstadoViewTestCase()
+# e.setUp()
 
     # puppies = Puppy.objects.all()
     # serializer = PuppySerializer(puppies, many=True)
     # self.assertEqual(response.data, serializer.data)
     # self.assertEqual(response.status_code, status.HTTP_200_OK)        
                
-class DepartamentoTestCase(APITestCase):
-    def setUp(self) -> None:
-        init_data_test(self=self)
-        return super().setUp()
-    
-    def test_departamentos_get(self):
-        url = reverse("api:departamento")
-        url = "{}?parent_id={}".format(url,self.empresa.id)
-        # + '?' + urlencode({'parent_id':self.empresa.id})
-        r = self.client.get(url)
-        logger.debug("\n\n RDATA")
-        logger.debug(r)
-        current_objects= Departamento.objects.filter(Q(empresa__id=self.empresa.id))
-        serializer = DepartamentoSerializer(current_objects,  many =True)
-        logger.debug("\n\n SDATA")
-        logger.debug(serializer.data)
-        self.assertEqual(r.data,serializer.data)
-        self.assertEqual(r.status_code,status.HTTP_200_OK)
-            
-    def test_departamento_post(self):
-        url = reverse("api:departamento")
-        self.departamento.descripcion = 'Adicional'
-        serializer = DepartamentoSerializer(self.departamento, many = False)
-        r = self.client.post(url, serializer.data, format="json")
-        self.departamento = Departamento.objects.get(pk=r.data["id"])
-        serializer = DepartamentoSerializer(self.departamento, many = False)
-        self.assertEqual(r.data,serializer.data)
-        self.assertEqual(r.status_code,status.HTTP_201_CREATED)
-
-    def test_departamento_post_error(self):
-        url = reverse("api:departamento")
-        r = self.client.post(url, None)
-        self.assertEqual(r.status_code,status.HTTP_400_BAD_REQUEST)
-
-
-#Llenar datos de prueba
-# e= EstadoViewTestCase()
-# e.setUp()

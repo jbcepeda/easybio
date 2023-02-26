@@ -5,14 +5,18 @@ from api import customfunctions as cf
 
 logger = logging.getLogger(__name__)
 
-class Estado(models.Model):
+class CustomModel(object):
+    def __str__(self):
+        return str({f'{k}': f'{v}' for k, v in filter(
+            lambda item: not item[0].startswith('_'),
+                self.__dict__.items()
+        )})
+
+class Estado(CustomModel, models.Model):
     descripcion = models.CharField(max_length=50, null=False )
     color = models.CharField(max_length=7)
-    def __str__(self):
-        return str([f"attribute: {k}    value: {v}" for k, v in self.__dict__.items()])
-    # "%s %s %s" % (self.id,self.descripcion, self.color)
         
-class Empresa(models.Model):
+class Empresa(CustomModel, models.Model):
     ruc = models.CharField(max_length=13, unique=True)
     razon_social = models.CharField(max_length=200)
     nombre_comercial = models.CharField(max_length=200)
@@ -27,10 +31,8 @@ class Empresa(models.Model):
     estado = models.ForeignKey(Estado, on_delete=models.RESTRICT, null=False,
                                  related_name='empresa_estado')
     
-    def __str__(self):
-        return "%s %s" % (self.ruc, self.razon_social)
 
-class TipoEvento(models.Model):
+class TipoEvento(CustomModel, models.Model):
     empresa = models.ForeignKey(
         Empresa,
         on_delete=models.RESTRICT,
@@ -40,10 +42,8 @@ class TipoEvento(models.Model):
     orden = models.SmallIntegerField(default=0)
     estado = models.ForeignKey(Estado, on_delete=models.RESTRICT, null=False,
                                  related_name='tipo_evento_estado')
-    def __str__(self):
-        return "%s %s %s %s" % (self.empresa, self.descripcion, self.orden, self.estado)
         
-class Departamento(models.Model):
+class Departamento(CustomModel, models.Model):
     empresa = models.ForeignKey(
         Empresa,
         on_delete=models.RESTRICT,
@@ -53,27 +53,13 @@ class Departamento(models.Model):
     estado = models.ForeignKey(Estado, on_delete=models.RESTRICT, null=False,
                                  related_name='departamento_estado')
 
-        
-    def __str__(self):
-        return "%s %s" % (self.empresa.ruc, self.descripcion)
-
 class Coordenada(models.Model):
     lat = models.CharField(max_length = 20, default = "0.0")
     lon = models.CharField(max_length = 20, default = "0.0")
     class Meta:
-        abstract = True
-    
-
-
-# class CoordenadaForm(forms.ModelForm):
-#     class Meta:
-#         model = Coordenada
-#         fields = (
-#             'lat', 'lon'
-#         )
-  
+        abstract = True 
         
-class Ubicacion(models.Model):
+class Ubicacion(CustomModel, models.Model):
     #TIPOS = (('point','point'), ('polygon','polygon'))
     empresa = models.ForeignKey(
         Empresa,
@@ -87,12 +73,7 @@ class Ubicacion(models.Model):
     distancia_max =  models.IntegerField(default = 50)
     estado = models.ForeignKey(Estado, on_delete = models.RESTRICT, null = False,
                                  related_name = 'ubicacion_estado')
- 
-    def __str__(self):
-         return "%s %s %s %s %s %s" % (self.empresa.ruc,self.descripcion,
-                              self.tipo_dato.__str__, self.coordenadas, self.distancia_min, self.distancia_max)  
-        
-class Empleado(models.Model):
+class Empleado(CustomModel, models.Model):
     cedula = models.CharField(max_length=10)
     nombres = models.CharField(max_length=100)
     apellidos = models.CharField(max_length=100)
@@ -110,30 +91,13 @@ class Empleado(models.Model):
     )
     estado = models.ForeignKey(Estado, on_delete=models.RESTRICT, null=False,
                                  related_name='empleado_estado')
-    # @property
-    # def evento_empleado(self) -> any:
-    #     return self._evento_empleado
-    
-    # @evento_empleado.setter
-    # def evento_empleado(self, value)-> None:
-    #     self._evento_empleado = value
-      
-    def __str__(self):
-        return "%s %s %s %s %s" % (self.departamento.empresa.ruc, 
-                             self.departamento.descripcion,
-                             self.nombres, self.apellidos, self.ubicacion.coordenadas)    
-
-class Perfil(models.Model):
+class Perfil(CustomModel, models.Model):
     descripcion = models.CharField(max_length=20)
     es_administrador = models.SmallIntegerField(default=0)
     estado = models.ForeignKey(Estado, on_delete=models.RESTRICT, null=False,
                                  related_name='perfil_estado')
     
-    def __str__(self):
-        return "%s" % (self.descripcion)
-
-
-class Usuario(models.Model):
+class Usuario(CustomModel, models.Model):
     nombre_usuario=models.CharField(max_length=20, unique=True)
     empleado = models.ForeignKey(
         Empleado,
@@ -146,12 +110,7 @@ class Usuario(models.Model):
     estado = models.ForeignKey(Estado, on_delete=models.RESTRICT, null=False,
                                  related_name='usuario_estado')
     
-    def __str__(self):
-        return "%s %s" % (self.nombre_usuario, 
-                             self.empleado.departamento.empresa.id)
-    
-
-class EventoEmpleado(models.Model):
+class EventoEmpleado(CustomModel, models.Model):
     empleado = models.ForeignKey(
         Empleado,
         on_delete=models.RESTRICT,
@@ -187,7 +146,3 @@ class EventoEmpleado(models.Model):
         finally:
             return  self.intento_exitoso and self.distancia_actual <= self.ubicacion.distancia_max
         
-    def __str__(self):
-        return "%s %s %s %s %s %s %s %s %s %s" % (
-            self.empleado, self.evento, self.fecha, self.hora, self.coordenada_evento, self.distancia_actual, 
-            self.intento_exitoso, self.dispositivo, self.ubicacion, self.estado)

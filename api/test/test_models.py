@@ -7,78 +7,11 @@ import logging
 from rest_framework.test import APITestCase
 from api.models import * 
 from api import customfunctions
-
+from api.test.utils import CustomIniDataClass
 logger = logging.getLogger(__name__)
-
-# Create your tests here.
-def init_data_test(self) -> None:
-    self.estado = Estado.objects.create(descripcion = "Inicial", color = '0000FF')
-    self.empresa = Empresa.objects.create(
-        ruc = "1111111111111",
-        razon_social = "Empresa Uno",
-        nombre_comercial = "Empresa uno comercial",
-        direccion = "direccion uno",
-        telefono = "telefono uno",
-        nombres_contacto = "nombres contacto uno",
-        cargo_contacto = "cargo contacto uno",
-        email_contacto = "prueba@uno.com",
-        telefono_contacto = "2222221",
-        inicio_contrato = "2023-01-01",
-        fin_contrato = "2023-12-31",
-        estado = self.estado
-        )
-
-    self.tipo_evento = TipoEvento.objects.create(
-        empresa = self.empresa,
-        descripcion = "Inicio Jornada laboral",
-        orden = 1,
-        estado = self.estado
-    )
-
-    self.departamento = Departamento.objects.create(
-        empresa = self.empresa,
-        descripcion = "Sistemas",
-        estado = self.estado
-    )
-
-    self.ubicacion = Ubicacion.objects.create(
-        empresa = self.empresa,
-        descripcion = "RPDMQ",
-        tipo_dato =  "point",
-        coordenadas = [{"lat":-0.19041117621469852, "lon":-78.48837800323963}],
-        distancia_max =  20,
-        estado = self.estado
-    )
-    
-    self.empleado = Empleado.objects.create(
-        cedula = '0600000000',
-        nombres = 'Benjamin',
-        apellidos = 'Cepeda',
-        foto = None,
-        celular = '0999999999',
-        departamento = self.departamento,
-        ubicacion = self.ubicacion,
-        estado = self.estado
-    )
-    
-    self.perfil = Perfil.objects.create(
-        descripcion = 'Empleado',
-        es_administrador = 0,
-        estado = self.estado
-    )
-    
-    self.usuario =  Usuario.objects.create(
-        nombre_usuario = 'bcepeda',
-        empleado = self.empleado,
-        clave = '1234',
-        perfil = self.perfil,
-        estado = self.estado
-    )
-    
-    
-class CustomFunctionsTestCase(APITestCase):
+class CustomFunctionsTestCase(APITestCase, CustomIniDataClass):
     def setUp(self) -> None:
-        init_data_test(self=self)
+        self.init_data_test()
         return super().setUp()
     
     def test_valida_dentro_rango_punto(self):
@@ -141,10 +74,9 @@ class CustomFunctionsTestCase(APITestCase):
         en_rango, distancia_actual = customfunctions.valida_rango(tipo_dato = 'tipo_erroneo', \
             coordenadas_ubicacion = self.ubicacion.coordenadas, distancia_max = self.ubicacion.distancia_max, \
                 lat = lat, lon = lon)
-        
-class EstadoModelTestCase(APITestCase):
+class EstadoModelTestCase(APITestCase, CustomIniDataClass):
     def setUp(self) -> None:
-        init_data_test(self=self)
+        self.init_data_test()
         logger.debug(self.estado.__str__)
         return super().setUp()
     
@@ -152,9 +84,9 @@ class EstadoModelTestCase(APITestCase):
         items_count = Estado.objects.filter(descripcion = "Inicial").count()
         self.assertEqual(items_count,1)
         
-class EmpresaModelTestCase(APITestCase):
+class EmpresaModelTestCase(APITestCase, CustomIniDataClass):
     def setUp(self) -> None:
-        init_data_test(self=self)
+        self.init_data_test()
         logger.debug(self.empresa.__str__)
         return super().setUp()
     
@@ -162,9 +94,9 @@ class EmpresaModelTestCase(APITestCase):
         items_count = Empresa.objects.filter(ruc = "1111111111111").count()
         self.assertEqual(items_count,1)
         
-class TipoEventoModelTestCase(APITestCase):
+class TipoEventoModelTestCase(APITestCase, CustomIniDataClass):
     def setUp(self) -> None:
-        init_data_test(self=self)
+        self.init_data_test()
         logger.debug(self.tipo_evento.__str__)
         return super().setUp()
 
@@ -172,9 +104,9 @@ class TipoEventoModelTestCase(APITestCase):
         items_count = TipoEvento.objects.filter(empresa = self.empresa).count()
         self.assertEqual(items_count,1)
         
-class DepartamentoModelTestCase(APITestCase):
+class DepartamentoModelTestCase(APITestCase, CustomIniDataClass):
     def setUp(self) -> None:
-        init_data_test(self=self)
+        self.init_data_test()
         logger.debug(self.departamento.__str__)
         return super().setUp()
 
@@ -182,9 +114,9 @@ class DepartamentoModelTestCase(APITestCase):
         items_count = Departamento.objects.filter(empresa = self.empresa, descripcion = "Sistemas").count()
         self.assertEqual(items_count,1)
         
-class UbicacionModelTestCase(APITestCase):
+class UbicacionModelTestCase(APITestCase, CustomIniDataClass):
     def setUp(self) -> None:
-        init_data_test(self=self)
+        self.init_data_test()
         logger.debug(self.ubicacion.__str__)
         return super().setUp()
 
@@ -192,9 +124,9 @@ class UbicacionModelTestCase(APITestCase):
         items_count = Ubicacion.objects.filter(empresa = self.empresa, descripcion = "RPDMQ").count()
         self.assertEqual(items_count,1)
         
-class EmpleadoModelTestCase(APITestCase):
+class EmpleadoModelTestCase(APITestCase, CustomIniDataClass):
     def setUp(self) -> None:
-        init_data_test(self=self)
+        self.init_data_test()
         logger.debug(self.empleado.__str__)
         return super().setUp()
 
@@ -202,9 +134,9 @@ class EmpleadoModelTestCase(APITestCase):
         items_count = Empleado.objects.filter(departamento = self.departamento, apellidos = "Cepeda").count()
         self.assertEqual(items_count,1)
         
-class PerfilModelTestCase(APITestCase):
+class PerfilModelTestCase(APITestCase, CustomIniDataClass):
     def setUp(self) -> None:
-        init_data_test(self=self)
+        self.init_data_test()
         logger.debug(self.perfil.__str__)
         return super().setUp()
 
@@ -212,9 +144,9 @@ class PerfilModelTestCase(APITestCase):
         items_count = Perfil.objects.filter(descripcion = "Empleado").count()
         self.assertEqual(items_count,1)
         
-class UsuarioModelTestCase(APITestCase):
+class UsuarioModelTestCase(APITestCase, CustomIniDataClass):
     def setUp(self) -> None:
-        init_data_test(self=self)
+        self.init_data_test()
         logger.debug(self.usuario.__str__)
         return super().setUp()
 
@@ -222,9 +154,9 @@ class UsuarioModelTestCase(APITestCase):
         items_count = Usuario.objects.filter(nombre_usuario = "bcepeda").count()
         self.assertEqual(items_count,1)
         
-class EventoEmpleadoTestCase(APITestCase):
+class EventoEmpleadoTestCase(APITestCase, CustomIniDataClass):
     def setUp(self) -> None:
-        init_data_test(self=self)
+        self.init_data_test()
         return super().setUp()
 
     def test_evento_empleado_list(self):
