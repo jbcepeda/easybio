@@ -17,7 +17,7 @@ class CustomIniDataClass(object):
             telefono_contacto = "2222221",
             inicio_contrato = "2023-01-01",
             fin_contrato = "2023-12-31",
-            estado = self.estado
+            estado = self.estado,
             )
 
         self.tipo_evento = TipoEvento.objects.create(

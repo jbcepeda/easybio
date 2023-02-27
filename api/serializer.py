@@ -12,6 +12,8 @@ class EmpresaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Empresa
         fields = "__all__"
+        read_only_fields = (
+            "codigo_asignado", )
         
 class TipoEventoSerializer(serializers.ModelSerializer):
     empresa = EmpresaSerializer(many=False, read_only=True)
@@ -63,7 +65,13 @@ class UsuarioSerializer(serializers.ModelSerializer):
     estado = EstadoSerializer(many=False, read_only=True)
     class Meta:
         model = Usuario
-        fields = "__all__"            
+        fields = ("__all__") 
+        
+    # def save(self, **kwargs):
+    #     logger.debug("UsuarioSerializer - CREATE")
+    #     self.clave = make_password(self.clave)
+    #     return super().save(**kwargs)
+        
 
 class CoordenadaSerializer(serializers.ModelSerializer):
     class Meta:

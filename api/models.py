@@ -2,6 +2,8 @@ import logging
 from djongo import models
 from decimal import Decimal
 from api import customfunctions as cf
+import uuid
+from django.contrib.auth.hashers import make_password
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +16,7 @@ class CustomModel(object):
 
 class Estado(CustomModel, models.Model):
     descripcion = models.CharField(max_length=50, null=False )
-    color = models.CharField(max_length=7)
+    color = models.CharField(max_length=7)    
         
 class Empresa(CustomModel, models.Model):
     ruc = models.CharField(max_length=13, unique=True)
@@ -28,9 +30,19 @@ class Empresa(CustomModel, models.Model):
     telefono_contacto = models.CharField(max_length=14)
     inicio_contrato = models.DateField()
     fin_contrato = models.DateField()
+    codigo_asignado = models.UUIDField(unique=True, default=uuid.uuid4,editable=False)
     estado = models.ForeignKey(Estado, on_delete=models.RESTRICT, null=False,
                                  related_name='empresa_estado')
     
+class EmpresaGrupo(CustomModel, models.Model):
+    empresa = models.OneToOneField(
+        Empresa,
+        on_delete=models.RESTRICT,
+        primary_key=True,)
+    grupo = models.ForeignKey(
+        Empresa,
+        on_delete=models.RESTRICT,
+        related_name='empresa_grupo_grupo',)
 
 class TipoEvento(CustomModel, models.Model):
     empresa = models.ForeignKey(
@@ -104,11 +116,15 @@ class Usuario(CustomModel, models.Model):
         on_delete=models.RESTRICT,
         related_name='usuario_empleado',
     )
-    clave = models.CharField(max_length=15)
+    clave = models.CharField(max_length=20, null=False)
     perfil = models.ForeignKey(Perfil, on_delete=models.RESTRICT,
                                  related_name='usuario_pefil')
     estado = models.ForeignKey(Estado, on_delete=models.RESTRICT, null=False,
                                  related_name='usuario_estado')
+
+    def save(self, *args, **kwargs):
+        self.clave = make_password(self.clave)
+        super(Usuario, self).save(*args, **kwargs)    
     
 class EventoEmpleado(CustomModel, models.Model):
     empleado = models.ForeignKey(

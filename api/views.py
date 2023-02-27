@@ -78,6 +78,15 @@ class GenericObjects(APIView):
         except Exception as ex:
             logger.error(str(ex), extra={'className': self.__class__.__name__})
         return Response(status=status.HTTP_400_BAD_REQUEST)
+    # TODO 
+    # SOLUCIONAR problema (N+1)
+    # def get_queryset(self):
+    #     queryset = super().get_queryset()
+    #     queryset = queryset.prefetch_related(
+    #         Prefetch('cities')
+    #     )
+    #     return queryset    
+    
     
 class EstadoDetalle(GenericObjectDetail):
     def __init__(self):
@@ -114,7 +123,7 @@ class Departamentos(GenericObjects):
 
 class UbicacionDetalle(GenericObjectDetail):
     def __init__(self):
-        super().__init__(Departamento, DepartamentoSerializer)
+        super().__init__(Ubicacion, UbicacionSerializer)
 
 class Ubicaciones(GenericObjects):
     def __init__(self):
@@ -138,6 +147,7 @@ class Usuarios(GenericObjects):
     def __init__(self):
         super().__init__(object_class=Usuario, serializer_class = UsuarioSerializer,
                           kwargs={'empleado__ubicacion__empresa__id':0})
+        
 class EmpleadoDetalle(GenericObjectDetail):
     def __init__(self):
         super().__init__(Empleado, EmpleadoSerializer)
