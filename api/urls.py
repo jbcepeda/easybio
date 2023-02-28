@@ -19,5 +19,7 @@ urlpatterns = [
     path('usuario/', views.Usuarios.as_view(), name='usuario'),
     path('tipo-evento/<id>/', views.TipoEventoDetalle.as_view(), name='tipo-evento-detalle'),
     path('tipo-evento/', views.TipoEventos.as_view(), name='tipo-evento'),
+    path('token/', views.GeneralTokenView.as_view(), name='general-token'),
+    path('login-app/', views.LoginAppView.as_view(), name='login-app'),
 ]
 

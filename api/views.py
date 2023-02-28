@@ -156,7 +156,25 @@ class Empleados(GenericObjects):
     def __init__(self):
         super().__init__(object_class=Empleado, serializer_class = EmpleadoSerializer,
                           kwargs={'departamento__empresa__id':0})
-        
+class LoginAppView(APIView):
+    def post(self, request):
+        try:
+            return Response(status = status.HTTP_201_CREATED)
+        except Exception as ex:
+            logger.error(str(ex), extra={'className': self.__class__.__name__})
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+class GeneralTokenView(APIView):
+    def post(self, request):
+        try:
+            _t = self.request.data.get('t')
+            _dt = self.request.data.get('dt')
+            logger.debug("POST REQUEST t: {} dt: {}".format(_t,_dt))
+            return Response( status = status.HTTP_201_CREATED)
+        except Exception as ex:
+            logger.error(str(ex), extra={'className': self.__class__.__name__})
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    
 def error400View(request, exception):
     return render(request, 'error_404.html', status = 400)
 

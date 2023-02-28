@@ -1,7 +1,9 @@
 from api.models import *
+from datetime import datetime
+import hashlib
+
 
 class CustomIniDataClass(object):
-
 
     def init_data_test(self) -> None:
         self.estado = Estado.objects.create(descripcion = "Inicial", color = '0000FF')
@@ -67,4 +69,19 @@ class CustomIniDataClass(object):
             estado = self.estado
         )
 
+class CustomIniDataToken(object):
+    
+    def init_general_mobile_token():
+        _general_mobile_token='f67316be-db7d-4b43-aae1-7954f76d9939'
+        _dt = datetime.utcnow()
+        _str_dt = str(_dt.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
+        _base_string = _general_mobile_token + _str_dt
+        _t = hashlib.sha256(_base_string.encode('utf-8')).hexdigest()
+        logger.debug("BASE_STRING: {}".format(_base_string))
+        _data={
+            't': _t,
+            'dt': _str_dt,
+        }        
+        return _data
+        
 

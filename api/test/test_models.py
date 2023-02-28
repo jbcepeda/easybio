@@ -4,11 +4,15 @@
 """
 
 import logging
+from django.test import tag
 from rest_framework.test import APITestCase
 from api.models import * 
 from api import customfunctions
 from api.test.utils import CustomIniDataClass
+
 logger = logging.getLogger(__name__)
+
+@tag('models')
 class CustomFunctionsTestCase(APITestCase, CustomIniDataClass):
     def setUp(self) -> None:
         self.init_data_test()
@@ -74,6 +78,8 @@ class CustomFunctionsTestCase(APITestCase, CustomIniDataClass):
         en_rango, distancia_actual = customfunctions.valida_rango(tipo_dato = 'tipo_erroneo', \
             coordenadas_ubicacion = self.ubicacion.coordenadas, distancia_max = self.ubicacion.distancia_max, \
                 lat = lat, lon = lon)
+
+@tag('models')
 class EstadoModelTestCase(APITestCase, CustomIniDataClass):
     def setUp(self) -> None:
         self.init_data_test()
@@ -84,6 +90,7 @@ class EstadoModelTestCase(APITestCase, CustomIniDataClass):
         items_count = Estado.objects.filter(descripcion = "Inicial").count()
         self.assertEqual(items_count,1)
         
+@tag('models')
 class EmpresaModelTestCase(APITestCase, CustomIniDataClass):
     def setUp(self) -> None:
         self.init_data_test()
@@ -94,6 +101,7 @@ class EmpresaModelTestCase(APITestCase, CustomIniDataClass):
         items_count = Empresa.objects.filter(ruc = "1111111111111").count()
         self.assertEqual(items_count,1)
         
+@tag('models')
 class TipoEventoModelTestCase(APITestCase, CustomIniDataClass):
     def setUp(self) -> None:
         self.init_data_test()
@@ -104,6 +112,7 @@ class TipoEventoModelTestCase(APITestCase, CustomIniDataClass):
         items_count = TipoEvento.objects.filter(empresa = self.empresa).count()
         self.assertEqual(items_count,1)
         
+@tag('models')
 class DepartamentoModelTestCase(APITestCase, CustomIniDataClass):
     def setUp(self) -> None:
         self.init_data_test()
@@ -114,6 +123,7 @@ class DepartamentoModelTestCase(APITestCase, CustomIniDataClass):
         items_count = Departamento.objects.filter(empresa = self.empresa, descripcion = "Sistemas").count()
         self.assertEqual(items_count,1)
         
+@tag('models')
 class UbicacionModelTestCase(APITestCase, CustomIniDataClass):
     def setUp(self) -> None:
         self.init_data_test()
@@ -124,6 +134,7 @@ class UbicacionModelTestCase(APITestCase, CustomIniDataClass):
         items_count = Ubicacion.objects.filter(empresa = self.empresa, descripcion = "RPDMQ").count()
         self.assertEqual(items_count,1)
         
+@tag('models')
 class EmpleadoModelTestCase(APITestCase, CustomIniDataClass):
     def setUp(self) -> None:
         self.init_data_test()
@@ -134,6 +145,7 @@ class EmpleadoModelTestCase(APITestCase, CustomIniDataClass):
         items_count = Empleado.objects.filter(departamento = self.departamento, apellidos = "Cepeda").count()
         self.assertEqual(items_count,1)
         
+@tag('models')
 class PerfilModelTestCase(APITestCase, CustomIniDataClass):
     def setUp(self) -> None:
         self.init_data_test()
@@ -144,6 +156,7 @@ class PerfilModelTestCase(APITestCase, CustomIniDataClass):
         items_count = Perfil.objects.filter(descripcion = "Empleado").count()
         self.assertEqual(items_count,1)
         
+@tag('models')
 class UsuarioModelTestCase(APITestCase, CustomIniDataClass):
     def setUp(self) -> None:
         self.init_data_test()
@@ -154,6 +167,7 @@ class UsuarioModelTestCase(APITestCase, CustomIniDataClass):
         items_count = Usuario.objects.filter(nombre_usuario = "bcepeda").count()
         self.assertEqual(items_count,1)
         
+@tag('models')
 class EventoEmpleadoTestCase(APITestCase, CustomIniDataClass):
     def setUp(self) -> None:
         self.init_data_test()

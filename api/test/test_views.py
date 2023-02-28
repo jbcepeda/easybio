@@ -2,14 +2,18 @@
     EasyBio API Views test
 """
 import logging
+from django.test import tag
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase
 from api.models import *
 from api.serializer import *
-from api.test.utils import CustomIniDataClass
+from api.test.utils import CustomIniDataClass, CustomIniDataToken
 from api.test.generic_view_test_class import GenericViewTestCase
-from django.contrib.auth.hashers import make_password
 
 logger = logging.getLogger(__name__)
 
+@tag('views')
 class EstadoViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = Estado, serializer_class = EstadoSerializer,
@@ -40,6 +44,7 @@ class EstadoViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
+@tag('views')
 class DepartamentoViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = Departamento, serializer_class = DepartamentoSerializer,
@@ -74,6 +79,7 @@ class DepartamentoViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
+@tag('views')
 class EmpresaViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = Empresa, serializer_class = EmpresaSerializer,
@@ -117,6 +123,7 @@ class EmpresaViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
+@tag('views')
 class TipoEventoViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = TipoEvento, serializer_class = TipoEventoSerializer,
@@ -152,6 +159,7 @@ class TipoEventoViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
+@tag('views')
 class UbicacionViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = Ubicacion, serializer_class = UbicacionSerializer,
@@ -189,6 +197,7 @@ class UbicacionViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
+@tag('views')
 class EmpleadoViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = Empleado, serializer_class = EmpleadoSerializer,
@@ -228,6 +237,7 @@ class EmpleadoViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
+@tag('views')
 class PerfilViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = Perfil, serializer_class = PerfilSerializer,
@@ -262,6 +272,7 @@ class PerfilViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
+@tag('views')
 class UsuarioViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = Usuario, serializer_class = UsuarioSerializer,
@@ -299,6 +310,25 @@ class UsuarioViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
+@tag('login')
+class TokeViewTestCase(APITestCase):
+    def setUp(self):
+        logger.debug("SETUP {}".format(str(self.__class__.__name__)))
+        return super().setUp()
+        
+    def test_general_token_post(self):
+        _token_data = CustomIniDataToken.init_general_mobile_token()
+        url = reverse("api:general-token")
+        r = self.client.post(url, _token_data, format="json")
+        logger.debug("TOKEN R DATA: {}".format(str(r.data)))
+        self.assertEqual(r.status_code,status.HTTP_201_CREATED)
+
+    def test_general_token_post_error(self):
+        _token_data = CustomIniDataToken.init_general_mobile_token()
+        url = reverse("api:general-token")
+        r = self.client.post(url, None, format="json")
+        logger.debug("TOKEN R DATA: {}".format(str(r.data)))
+        self.assertEqual(r.status_code,status.HTTP_400_BAD_REQUEST)
 
 #Llenar datos de prueba
 #e= EstadoViewTestCase()

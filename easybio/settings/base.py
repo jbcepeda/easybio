@@ -181,3 +181,5 @@ LOGGING = {
         }
     }
 }
+
+TIME_OUT_GENERAL_TICKET = config('TIME_OUT_GENERAL_TICKET', default=30000, cast=int)
