@@ -10,19 +10,18 @@ logger = logging.getLogger(__name__)
 class GenericViewTestCase(APITestCase, CustomIniDataClass):
 
     def setUp(self, object_class, serializer_class, 
-                encrypted_fields,
                 reverse_name_detail, reverse_name_list,
-                serialized_data_object, reverse_extra_param,
-                filter_condition,
+                serialized_data_object, update_data_fields, 
+                reverse_extra_param, filter_condition,
                 parent_instance_class)-> None:
         self.init_data_test()
         self.object_class = object_class
         self.serializer_class = serializer_class
-        self.encrypted_fields = encrypted_fields
         self.reverse_name_detail = reverse_name_detail
         self.reverse_name_list = reverse_name_list
         self.instance_class = self.object_class.objects.all().first()
         self.serialized_data_object = serialized_data_object        
+        self.update_data_fields = update_data_fields
         self.reverse_extra_param = reverse_extra_param,
         self.filter_condition = filter_condition
         self.parent_instance_class = parent_instance_class
@@ -47,10 +46,10 @@ class GenericViewTestCase(APITestCase, CustomIniDataClass):
         logger.debug(str(self.object_class))
         url = reverse(self.reverse_name_detail, kwargs={'id':self.instance_class.id})
         serializer = self.serializer_class(self.instance_class, many = False)
-        logger.debug("SERIALIZER DATA: {}".format(serializer.data))
-        for ef 
-        r = self.client.put(url, serializer.data, format="json")
-        logger.debug("PUT R DATA: {}".format(str(r)))
+        put_data = serializer.data
+        for k, v in self.update_data_fields.items():
+            put_data[k] = v
+        r = self.client.put(url, put_data, format="json")
         self.assertEqual(r.status_code,status.HTTP_200_OK)
 
     def generic_test_detalle_put_error(self):
