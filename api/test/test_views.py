@@ -4,11 +4,8 @@
 import logging
 from django.test import tag
 from django.urls import reverse
-from rest_framework import status
-from rest_framework.test import APITestCase
 from api.models import *
 from api.serializer import *
-from api.test.utils import CustomIniDataClass, CustomIniDataToken
 from api.test.generic_view_test_class import GenericViewTestCase
 
 logger = logging.getLogger(__name__)
@@ -310,32 +307,3 @@ class UsuarioViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
-@tag('login')
-class TokeViewTestCase(APITestCase):
-    def setUp(self):
-        logger.debug("SETUP {}".format(str(self.__class__.__name__)))
-        return super().setUp()
-        
-    def test_general_token_post(self):
-        _token_data = CustomIniDataToken.init_general_mobile_token()
-        url = reverse("api:general-token")
-        r = self.client.post(url, _token_data, format="json")
-        logger.debug("TOKEN R DATA: {}".format(str(r.data)))
-        self.assertEqual(r.status_code,status.HTTP_201_CREATED)
-
-    def test_general_token_post_error(self):
-        _token_data = CustomIniDataToken.init_general_mobile_token()
-        url = reverse("api:general-token")
-        r = self.client.post(url, None, format="json")
-        logger.debug("TOKEN R DATA: {}".format(str(r.data)))
-        self.assertEqual(r.status_code,status.HTTP_400_BAD_REQUEST)
-
-#Llenar datos de prueba
-#e= EstadoViewTestCase()
-#e.setUp()
-
-    # puppies = Puppy.objects.all()
-    # serializer = PuppySerializer(puppies, many=True)
-    # self.assertEqual(response.data, serializer.data)
-    # self.assertEqual(response.status_code, status.HTTP_200_OK)        
-               

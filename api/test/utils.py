@@ -1,6 +1,8 @@
 from api.models import *
 from datetime import datetime
 import hashlib
+from decouple import config
+
 
 
 class CustomIniDataClass(object):
@@ -71,16 +73,17 @@ class CustomIniDataClass(object):
 
 class CustomIniDataToken(object):
     
-    def init_general_mobile_token():
-        _general_mobile_token='f67316be-db7d-4b43-aae1-7954f76d9939'
-        _dt = datetime.utcnow()
-        _str_dt = str(_dt.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
-        _base_string = _general_mobile_token + _str_dt
+    def init_general_mobile_token(utc_datetime):
+        if utc_datetime:
+            _d = str(utc_datetime.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]) 
+        else:
+            _d = str(datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
+        _general_mobile_key=config('GENERAL_MOBILE_KEY')
+        _base_string = _general_mobile_key + _d
         _t = hashlib.sha256(_base_string.encode('utf-8')).hexdigest()
-        logger.debug("BASE_STRING: {}".format(_base_string))
         _data={
             't': _t,
-            'dt': _str_dt,
+            'd': _d,
         }        
         return _data
         
