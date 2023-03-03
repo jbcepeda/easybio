@@ -23,7 +23,8 @@ class TokeViewTestCase(APITestCase):
         _token_data = CustomIniDataToken.init_general_mobile_token(None)
         url = reverse("api:token-general")
         r = self.client.post(url, _token_data, format="json")
-        self.assertEqual(r.status_code,status.HTTP_201_CREATED)
+        logger.debug("test_token_general_post DATA {}".format(r.data))
+        self.assertEqual(r.status_code,status.HTTP_200_OK)
 
     def test_token_general_post_error(self):
         _token_data = CustomIniDataToken.init_general_mobile_token(datetime.utcnow()+timedelta(seconds=-31))

@@ -7,7 +7,7 @@ import logging
 from django.test import tag
 from rest_framework.test import APITestCase
 from api.models import * 
-from api import customfunctions
+from api import custom_functions
 from api.test.utils import CustomIniDataClass
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ class CustomFunctionsTestCase(APITestCase, CustomIniDataClass):
         lat = -0.19044428987472398
         lon = -78.4882888957929
         tipo_dato = 'point'
-        en_rango, distancia_actual = customfunctions.valida_rango(tipo_dato = tipo_dato, \
+        en_rango, distancia_actual = custom_functions.valida_rango(tipo_dato = tipo_dato, \
             coordenadas_ubicacion = self.ubicacion.coordenadas, distancia_max = self.ubicacion.distancia_max, \
                 lat = lat, lon = lon)
         self.assertEqual(en_rango, True)
@@ -31,7 +31,7 @@ class CustomFunctionsTestCase(APITestCase, CustomIniDataClass):
         lat = -0.1898208998328632 
         lon = -78.48750746006637
         tipo_dato = 'point'
-        en_rango, distancia_actual = customfunctions.valida_rango(tipo_dato = tipo_dato, \
+        en_rango, distancia_actual = custom_functions.valida_rango(tipo_dato = tipo_dato, \
             coordenadas_ubicacion = self.ubicacion.coordenadas, distancia_max = self.ubicacion.distancia_max, \
                 lat = lat, lon = lon)
         self.assertEqual(en_rango, False)
@@ -46,7 +46,7 @@ class CustomFunctionsTestCase(APITestCase, CustomIniDataClass):
                 {"lat":-0.19758857295292392, "lon":-78.49215949696644},
                 {"lat":-0.19753434588915864, "lon":-78.49237382425862},
             ]
-        en_rango, distancia_actual = customfunctions.valida_rango(tipo_dato = self.ubicacion.tipo_dato, \
+        en_rango, distancia_actual = custom_functions.valida_rango(tipo_dato = self.ubicacion.tipo_dato, \
             coordenadas_ubicacion = self.ubicacion.coordenadas, distancia_max = self.ubicacion.distancia_max, \
                 lat = lat, lon = lon)
         self.assertEqual(en_rango, True)
@@ -61,21 +61,21 @@ class CustomFunctionsTestCase(APITestCase, CustomIniDataClass):
                 {"lat":-0.19753434588915864, "lon":-78.49237382425862},
             ]
       
-        en_rango, distancia_actual = customfunctions.valida_rango(tipo_dato = self.ubicacion.tipo_dato, \
+        en_rango, distancia_actual = custom_functions.valida_rango(tipo_dato = self.ubicacion.tipo_dato, \
             coordenadas_ubicacion = self.ubicacion.coordenadas, distancia_max = self.ubicacion.distancia_max, \
                 lat = lat, lon = lon)
         self.assertEqual(en_rango, False)
         
     def test_valida_rango_sin_coordenadas(self):
         self.ubicacion.coordenadas = None
-        en_rango, distancia_actual = customfunctions.valida_rango(tipo_dato = self.ubicacion.tipo_dato, \
+        en_rango, distancia_actual = custom_functions.valida_rango(tipo_dato = self.ubicacion.tipo_dato, \
             coordenadas_ubicacion = self.ubicacion.coordenadas, distancia_max = self.ubicacion.distancia_max, \
                 lat = None, lon = None)
 
     def test_valida_rango_no_valido_tipo_dato(self):
         lat = -0.19696485788987494 
         lon = -78.49190597157524
-        en_rango, distancia_actual = customfunctions.valida_rango(tipo_dato = 'tipo_erroneo', \
+        en_rango, distancia_actual = custom_functions.valida_rango(tipo_dato = 'tipo_erroneo', \
             coordenadas_ubicacion = self.ubicacion.coordenadas, distancia_max = self.ubicacion.distancia_max, \
                 lat = lat, lon = lon)
 

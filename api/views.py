@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db.models.query_utils import Q
 import logging
-from api.authorization import *
+from api.token_features.authorization import *
 logger = logging.getLogger(__name__)
 
 class GenericObjectDetail(APIView):
@@ -164,14 +164,15 @@ class LoginAppView(APIView):
             logger.error(str(ex), extra={'className': self.__class__.__name__})
         return Response(status=status.HTTP_400_BAD_REQUEST)
     
-class TokenGeneralView(APIView):
+class GeneralTokenView(APIView):
     def post(self, request):
         try:
             _t = self.request.data.get('t')
             _d = self.request.data.get('d')
             if _t and _d:
-                if valida_token_general(t=_t, d=_d):
-                    return Response( status = status.HTTP_201_CREATED)
+                _v, _d = GeneralTokenAutorization.validate(t=_t, d=_d) 
+                if _v:
+                    return Response( data={'d':_d},status = status.HTTP_200_OK)
         except Exception as ex:
             logger.error(str(ex), extra={'className': self.__class__.__name__})
         return Response(status=status.HTTP_401_UNAUTHORIZED)

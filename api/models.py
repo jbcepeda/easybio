@@ -1,7 +1,7 @@
 import logging
 from djongo import models
 from decimal import Decimal
-from api import customfunctions as cf
+from api import custom_functions as cf
 import uuid
 from django.contrib.auth.hashers import make_password
 
@@ -15,22 +15,24 @@ class CustomModel(object):
         )})
 
 class Estado(CustomModel, models.Model):
-    descripcion = models.CharField(max_length=50, null=False )
+    descripcion = models.CharField(max_length=50, null=False, unique=True )
     color = models.CharField(max_length=7)    
         
 class Empresa(CustomModel, models.Model):
-    ruc = models.CharField(max_length=13, unique=True)
-    razon_social = models.CharField(max_length=200)
+    ruc = models.CharField(max_length=20, unique=True)
+    razon_social = models.CharField(max_length=200, null=False)
     nombre_comercial = models.CharField(max_length=200)
-    direccion = models.CharField(max_length=200)
-    telefono = models.CharField(max_length=14)
-    nombres_contacto = models.CharField(max_length=100)
-    cargo_contacto = models.CharField(max_length=50)
-    email_contacto = models.EmailField()
-    telefono_contacto = models.CharField(max_length=14)
-    inicio_contrato = models.DateField()
-    fin_contrato = models.DateField()
+    direccion = models.CharField(max_length=200, null=False)
+    telefono = models.CharField(max_length=14, null=False)
+    nombres_contacto = models.CharField(max_length=100, null=False)
+    cargo_contacto = models.CharField(max_length=50, null=False)
+    email_contacto = models.EmailField(null=False)
+    telefono_contacto = models.CharField(max_length=14, null=False)
+    inicio_contrato = models.DateField(null=False)
+    fin_contrato = models.DateField(null=False)
     codigo_asignado = models.UUIDField(unique=True, default=uuid.uuid4,editable=False)
+    meses_disponible_datos=models.SmallIntegerField()
+    permitir_uso_varios_dispositivos=models.BooleanField()
     estado = models.ForeignKey(Estado, on_delete=models.RESTRICT, null=False,
                                  related_name='empresa_estado')
     
@@ -43,6 +45,30 @@ class EmpresaGrupo(CustomModel, models.Model):
         Empresa,
         on_delete=models.RESTRICT,
         related_name='empresa_grupo_grupo',)
+
+class Calendario(CustomModel, models.Model):
+    empresa = models.ForeignKey(
+        Empresa,
+        on_delete=models.RESTRICT,
+        related_name='calendario_empresa',
+    )
+    nombre=models.CharField(max_length=20, null=False)
+    descripcion=models.CharField(max_length=20)
+    estado = models.ForeignKey(Estado, on_delete=models.RESTRICT, null=False,
+                                related_name='calendario_estado')
+    
+class DiaLaborableCalendario(CustomModel, models.Model):
+    calendario = models.ForeignKey(
+        Calendario,
+        on_delete=models.RESTRICT,
+        related_name='semana_laborable_calendario',)
+    dia_semana = models.SmallIntegerField()
+    hora_inicio = models.TimeField()
+    hora_fin = models.TimeField()
+    
+class Feriado(CustomModel, models.Model):
+    fecha = models.DateField()
+    
 
 class TipoEvento(CustomModel, models.Model):
     empresa = models.ForeignKey(
@@ -83,8 +109,10 @@ class Ubicacion(CustomModel, models.Model):
     coordenadas = models.ArrayField(model_container=Coordenada)
     distancia_min = models.IntegerField(default = 0)
     distancia_max =  models.IntegerField(default = 50)
+    zona_horaria = models.CharField(max_length = 20)        
     estado = models.ForeignKey(Estado, on_delete = models.RESTRICT, null = False,
                                  related_name = 'ubicacion_estado')
+    
 class Empleado(CustomModel, models.Model):
     cedula = models.CharField(max_length=10)
     nombres = models.CharField(max_length=100)
