@@ -1,5 +1,5 @@
 from api.models import *
-from datetime import datetime
+from datetime import datetime, time
 import hashlib
 from decouple import config
 
@@ -22,14 +22,10 @@ class CustomIniDataClass(object):
             inicio_contrato = "2023-01-01",
             fin_contrato = "2023-12-31",
             estado = self.estado,
+            meses_disponible_datos= 3,
+            permitir_uso_varios_dispositivos = False
             )
 
-        self.tipo_evento = TipoEvento.objects.create(
-            empresa = self.empresa,
-            descripcion = "Inicio Jornada laboral",
-            orden = 1,
-            estado = self.estado
-        )
 
         self.departamento = Departamento.objects.create(
             empresa = self.empresa,
@@ -37,6 +33,44 @@ class CustomIniDataClass(object):
             estado = self.estado
         )
 
+        self.feriado = Feriado.objects.create(
+            empresa = self.empresa,
+            fecha = "2023-05-01",
+            descripcion = "Dia del trabajo",
+            es_global = True,
+            estado = self.estado,
+        )
+        
+        self.calendario = Calendario.objects.create(
+            empresa = self.empresa,
+            nombre='jornada normal',
+            descripcion='Jornada semanal L-V 9AM-5PM',
+            estado = self.estado,
+        )
+
+        self.dia = Dia.objects.create(calendario = self.calendario, dia_semana = 1, estado = self.estado)
+        self.dia = Dia.objects.create(calendario = self.calendario, dia_semana = 2, estado = self.estado)
+        self.dia = Dia.objects.create(calendario = self.calendario, dia_semana = 3, estado = self.estado)
+        self.dia = Dia.objects.create(calendario = self.calendario, dia_semana = 4, estado = self.estado)
+        self.dia = Dia.objects.create(calendario = self.calendario, dia_semana = 5, estado = self.estado)
+
+        self.franja_tiempo = FranjaTiempo.objects.create(
+            calendario = self.calendario,
+            descripcion = 'Horario normal trabajo 9AM a 5PM',
+            es_laborable = True,
+            tiene_horario_fijo = True,
+            duracion_minutos = 0,
+            hora_inicio = '09:00',
+            hora_fin = '18:00',
+            estado = self.estado
+        )
+        
+        self.dia_franja_tiempo = DiaFranjaTiempo.objects.create(
+            dia = self.dia,
+            franja_tiempo = self.franja_tiempo,
+            estado = self.estado
+        )        
+        
         self.ubicacion = Ubicacion.objects.create(
             empresa = self.empresa,
             descripcion = "RPDMQ",
@@ -53,10 +87,16 @@ class CustomIniDataClass(object):
             foto = None,
             celular = '0999999999',
             departamento = self.departamento,
-            ubicacion = self.ubicacion,
+            calendario = self.calendario,
             estado = self.estado
         )
         
+        self.empleado_ubicacion = EmpleadoUbicacion.objects.create(
+            empleado = self.empleado,
+            ubicacion = self.ubicacion,
+            estado = self.estado
+        )
+
         self.perfil = Perfil.objects.create(
             descripcion = 'Empleado',
             es_administrador = 0,

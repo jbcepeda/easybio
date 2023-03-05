@@ -100,18 +100,7 @@ class EmpresaModelTestCase(APITestCase, CustomIniDataClass):
     def test_empresa_list(self):
         items_count = Empresa.objects.filter(ruc = "1111111111111").count()
         self.assertEqual(items_count,1)
-        
-@tag('models')
-class TipoEventoModelTestCase(APITestCase, CustomIniDataClass):
-    def setUp(self) -> None:
-        self.init_data_test()
-        logger.debug(self.tipo_evento.__str__)
-        return super().setUp()
-
-    def test_tipo_evento_list(self):
-        items_count = TipoEvento.objects.filter(empresa = self.empresa).count()
-        self.assertEqual(items_count,1)
-        
+              
 @tag('models')
 class DepartamentoModelTestCase(APITestCase, CustomIniDataClass):
     def setUp(self) -> None:
@@ -122,7 +111,62 @@ class DepartamentoModelTestCase(APITestCase, CustomIniDataClass):
     def test_departamento_list(self):
         items_count = Departamento.objects.filter(empresa = self.empresa, descripcion = "Sistemas").count()
         self.assertEqual(items_count,1)
+
+@tag('models')
+class FeriadoModelTestCase(APITestCase, CustomIniDataClass):
+    def setUp(self) -> None:
+        self.init_data_test()
+        logger.debug(self.feriado.__str__)
+        return super().setUp()
+
+    def test_feriado_list(self):
+        items_count = Feriado.objects.filter(empresa = self.empresa, descripcion = "Dia del trabajo").count()
+        self.assertEqual(items_count,1)
+
+@tag('models')
+class CalendarioModelTestCase(APITestCase, CustomIniDataClass):
+    def setUp(self) -> None:
+        self.init_data_test()
+        logger.debug(self.calendario.__str__)
+        return super().setUp()
+
+    def test_calendario_list(self):
+        items_count = Calendario.objects.filter(empresa = self.empresa, nombre = "jornada normal").count()
+        self.assertEqual(items_count,1)
+
+@tag('models')
+class DiaModelTestCase(APITestCase, CustomIniDataClass):
+    def setUp(self) -> None:
+        self.init_data_test()
+        logger.debug(self.dia.__str__)
+        return super().setUp()
+
+    def test_dia_list(self):
+        items_count = Dia.objects.filter(calendario = self.calendario).count()
+        self.assertEqual(items_count,5)
+
+@tag('models')
+class FranjaTiempoModelTestCase(APITestCase, CustomIniDataClass):
+    def setUp(self) -> None:
+        self.init_data_test()
+        logger.debug(self.franja_tiempo.__str__)
+        return super().setUp()
+
+    def test_franja_tiempo_list(self):
+        items_count = FranjaTiempo.objects.filter(calendario = self.calendario).count()
+        self.assertEqual(items_count,1)
         
+@tag('models')
+class DiaFranjaTiempoModelTestCase(APITestCase, CustomIniDataClass):
+    def setUp(self) -> None:
+        self.init_data_test()
+        logger.debug(self.dia_franja_tiempo.__str__)
+        return super().setUp()
+
+    def test_dia_franja_tiempo_list(self):
+        items_count = DiaFranjaTiempo.objects.filter(dia = self.dia, franja_tiempo = self.franja_tiempo).count()
+        self.assertEqual(items_count,1)
+
 @tag('models')
 class UbicacionModelTestCase(APITestCase, CustomIniDataClass):
     def setUp(self) -> None:
@@ -145,6 +189,17 @@ class EmpleadoModelTestCase(APITestCase, CustomIniDataClass):
         items_count = Empleado.objects.filter(departamento = self.departamento, apellidos = "Cepeda").count()
         self.assertEqual(items_count,1)
         
+@tag('models')
+class EmpleadoUbicacionModelTestCase(APITestCase, CustomIniDataClass):
+    def setUp(self) -> None:
+        self.init_data_test()
+        logger.debug(self.ubicacion.__str__)
+        return super().setUp()
+
+    def test_empleado_ubicacion_list(self):
+        items_count = EmpleadoUbicacion.objects.filter(empleado = self.empleado, ubicacion = self.ubicacion).count()
+        self.assertEqual(items_count,1)
+
 @tag('models')
 class PerfilModelTestCase(APITestCase, CustomIniDataClass):
     def setUp(self) -> None:
@@ -177,14 +232,15 @@ class EventoEmpleadoTestCase(APITestCase, CustomIniDataClass):
         _coordenada = {"lat": -0.19044383946406043, "lon": -78.48829875522068}
         self.evento_empleado = EventoEmpleado.objects.create(   
             empleado = self.empleado, 
-            evento = self.tipo_evento,
+            dia_franja_tiempo = self.dia_franja_tiempo,
+            es_inicio = True,
             fecha = '2023-02-17',
             hora = '08:30',
             coordenada_evento = _coordenada,
-            intento_exitoso = False,
-            distancia_actual = 0,
-            dispositivo = 'TestCase',
             ubicacion = self.ubicacion,
+            distancia_actual = 0,
+            cumple_ubicacion = False,
+            dispositivo = 'TestCase',
             estado = self.estado
         )
         items_count = EventoEmpleado.objects.filter(dispositivo = "TestCase").count()
@@ -196,14 +252,15 @@ class EventoEmpleadoTestCase(APITestCase, CustomIniDataClass):
         _coordenada = {"lat": -0.19044383946406043, "lon": -78.48829875522068}
         self.evento_empleado = EventoEmpleado.objects.create(   
             empleado = self.empleado, 
-            evento = self.tipo_evento,
+            dia_franja_tiempo = self.dia_franja_tiempo,
+            es_inicio = True,
             fecha = '2023-02-17',
             hora = '08:30',
             coordenada_evento = _coordenada,
-            intento_exitoso = False,
-            distancia_actual = 0,
-            dispositivo = 'TestCase',
             ubicacion = self.ubicacion,
+            distancia_actual = 0,
+            cumple_ubicacion = False,
+            dispositivo = 'TestCase',
             estado = self.estado
         )
         _result = self.evento_empleado.en_rango()
@@ -215,14 +272,14 @@ class EventoEmpleadoTestCase(APITestCase, CustomIniDataClass):
         _coordenada = {"lat": -0.1898208998328632, "lon": -78.48750746006637}
         self.evento_empleado = EventoEmpleado.objects.create(   
             empleado = self.empleado, 
-            evento = self.tipo_evento,
+            dia_franja_tiempo = self.dia_franja_tiempo,
+            es_inicio = True,
             fecha = '2023-02-17',
             hora = '08:30',
             coordenada_evento = _coordenada,
-            intento_exitoso = False,
+            ubicacion = self.ubicacion,
             distancia_actual = 0,
             dispositivo = 'TestCase',
-            ubicacion = self.ubicacion,
             estado = self.estado
         )
         _result =self.evento_empleado.en_rango()
@@ -234,14 +291,15 @@ class EventoEmpleadoTestCase(APITestCase, CustomIniDataClass):
         _coordenada = None
         self.evento_empleado = EventoEmpleado.objects.create(   
             empleado = self.empleado, 
-            evento = self.tipo_evento,
+            dia_franja_tiempo = self.dia_franja_tiempo,
+            es_inicio = True,
             fecha = '2023-02-17',
             hora = '08:30',
             coordenada_evento = _coordenada,
-            intento_exitoso = False,
-            distancia_actual = 0,
-            dispositivo = 'TestCase',
             ubicacion = self.ubicacion,
+            distancia_actual = 0,
+            cumple_ubicacion = False,
+            dispositivo = 'TestCase',
             estado = self.estado
         )
         _result =self.evento_empleado.en_rango()
@@ -253,14 +311,14 @@ class EventoEmpleadoTestCase(APITestCase, CustomIniDataClass):
         _coordenada = {"lat": "ABCD5", "lon": "XYZ2"}
         self.evento_empleado = EventoEmpleado.objects.create(   
             empleado = self.empleado, 
-            evento = self.tipo_evento,
+            dia_franja_tiempo = self.dia_franja_tiempo,
+            es_inicio = True,
             fecha = '2023-02-17',
             hora = '08:30',
             coordenada_evento = _coordenada,
-            intento_exitoso = False,
-            distancia_actual = 0,
-            dispositivo = 'TestCase',
             ubicacion = self.ubicacion,
+            cumple_ubicacion = False,
+            dispositivo = 'TestCase',
             estado = self.estado
         )
         _result =self.evento_empleado.en_rango()

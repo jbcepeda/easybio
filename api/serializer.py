@@ -15,19 +15,59 @@ class EmpresaSerializer(serializers.ModelSerializer):
         read_only_fields = (
             "codigo_asignado", )
         
-class TipoEventoSerializer(serializers.ModelSerializer):
+class EmpresaGrupoSerializer(serializers.ModelSerializer):
     empresa = EmpresaSerializer(many=False, read_only=True)
-    estado = EstadoSerializer(many=False, read_only=True)
     class Meta:
-        model = TipoEvento
-        fields = "__all__" 
-                
+        model = EmpresaGrupo
+        fields = "__all__"
+
 class DepartamentoSerializer(serializers.ModelSerializer):
     empresa = EmpresaSerializer(many=False, read_only=True)
     estado = EstadoSerializer(many=False, read_only=True)
     class Meta:
         model = Departamento
         fields = "__all__"         
+
+class FeriadoSerializer(serializers.ModelSerializer):
+    empresa = EmpresaSerializer(many=False, read_only=True)
+    estado = EstadoSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Feriado
+        fields = "__all__" 
+                
+class CalendarioSerializer(serializers.ModelSerializer):
+    empresa = EmpresaSerializer(many=False, read_only=True)
+    estado = EstadoSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Calendario
+        fields = "__all__" 
+
+class DiaSerializer(serializers.ModelSerializer):
+    calendario = CalendarioSerializer(many=False, read_only=True)
+    estado = EstadoSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Dia
+        fields = "__all__" 
+
+class FranjaTiempoSerializer(serializers.ModelSerializer):
+    calendario = CalendarioSerializer(many=False, read_only=True)
+    estado = EstadoSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = FranjaTiempo
+        fields = "__all__" 
+
+class DiaFranjaTiempoSerializer(serializers.ModelSerializer):
+    dia = DiaSerializer(many=False, read_only=True)
+    franja_tiempo = FranjaTiempoSerializer(many=False, read_only=True)
+    estado = EstadoSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = DiaFranjaTiempo
+        fields = "__all__" 
 
 class UbicacionSerializer(serializers.ModelSerializer):
     empresa = EmpresaSerializer(many=False, read_only=True)
@@ -37,21 +77,25 @@ class UbicacionSerializer(serializers.ModelSerializer):
         model = Ubicacion
         fields = ("__all__")
         
-class EventoEmpleadoSerializer(serializers.ModelSerializer):
-    evento = TipoEventoSerializer(many=False, read_only=True)
-    estado = EstadoSerializer(many=False, read_only=True)
-    class Meta:
-        model = EventoEmpleado
-        fields = "__all__" 
-                
 class EmpleadoSerializer(serializers.ModelSerializer):
+    empresa = EmpresaSerializer(many=False, read_only=True)
     departamento = DepartamentoSerializer(many=False, read_only=True)
-    ubicacion = UbicacionSerializer(many=False, read_only=True)
+    Calendario = CalendarioSerializer(many=True, read_only=True)
     estado = EstadoSerializer(many=False, read_only=True)
 
     class Meta:
         model = Empleado
         fields = "__all__"    
+
+class EmpleadoUbicacionSerializer(serializers.ModelSerializer):
+    empleado = EmpleadoSerializer(many=False, read_only=True)
+    ubicacion = UbicacionSerializer(many=False, read_only=True)
+    estado = EstadoSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = EmpleadoUbicacion
+        fields = "__all__"    
+                        
                         
 class PerfilSerializer(serializers.ModelSerializer):
     estado = EstadoSerializer(many=False, read_only=True)
@@ -78,6 +122,14 @@ class CoordenadaSerializer(serializers.ModelSerializer):
         model = Coordenada
         fields = ("__all__") 
         
+class EventoEmpleadoSerializer(serializers.ModelSerializer):
+    empleado = EmpleadoSerializer(many=False, read_only=True)
+    dia_franja_tiempo = DiaFranjaTiempoSerializer(many=False, read_only=True)
+    ubicacion = UbicacionSerializer(many=False, read_only=True)
+    estado = EstadoSerializer(many=False, read_only=True)
+    class Meta:
+        model = EventoEmpleado
+        fields = "__all__" 
 
         
         
