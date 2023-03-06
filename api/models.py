@@ -81,7 +81,7 @@ class Calendario(CustomModel, models.Model):
         related_name='calendario_empresa',
     )
     nombre=models.CharField(max_length=20, null=False)
-    descripcion=models.CharField(max_length=20)
+    descripcion=models.CharField(max_length=50)
     estado = models.ForeignKey(Estado, on_delete=models.RESTRICT, null=False,
                                 related_name='calendario_estado')
     class Meta:
@@ -156,7 +156,7 @@ class Ubicacion(CustomModel, models.Model):
     #TIPOS = (('point','point'), ('polygon','polygon'))
     empresa = models.ForeignKey(
         Empresa,
-        on_delete=models.RESTRICT,
+        on_delete=models.RESTRICT, null = False,
         related_name='ubicacion_empresa',
     )
     descripcion = models.CharField(max_length = 100, null=False)
@@ -164,7 +164,7 @@ class Ubicacion(CustomModel, models.Model):
     coordenadas = models.ArrayField(model_container=Coordenada)
     distancia_min = models.IntegerField(default = 0)
     distancia_max =  models.IntegerField(default = 50)
-    zona_horaria = models.CharField(max_length = 20)        
+    zona_horaria = models.CharField(max_length = 50)        
     estado = models.ForeignKey(Estado, on_delete = models.RESTRICT, null = False,
                                  related_name = 'ubicacion_estado')
     

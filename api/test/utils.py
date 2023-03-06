@@ -76,11 +76,14 @@ class CustomIniDataClass(object):
             descripcion = "RPDMQ",
             tipo_dato =  "point",
             coordenadas = [{"lat":-0.19041117621469852, "lon":-78.48837800323963}],
+            distancia_min =  0,
             distancia_max =  20,
+            zona_horaria = "",
             estado = self.estado
         )
         
         self.empleado = Empleado.objects.create(
+            empresa = self.empresa,
             cedula = '0600000000',
             nombres = 'Benjamin',
             apellidos = 'Cepeda',

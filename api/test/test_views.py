@@ -7,10 +7,12 @@ from django.urls import reverse
 from api.models import *
 from api.serializer import *
 from api.test.generic_view_test_class import GenericViewTestCase
+import logging
+from api.test.utils import CustomIniDataClass
 
 logger = logging.getLogger(__name__)
 
-@tag('views')
+@tag('views1')
 class EstadoViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = Estado, serializer_class = EstadoSerializer,
@@ -41,7 +43,53 @@ class EstadoViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
-@tag('views')
+@tag('views1')
+class EmpresaViewTestCase(GenericViewTestCase):
+    def setUp(self):
+        super().setUp(object_class = Empresa, serializer_class = EmpresaSerializer,
+                    reverse_name_detail = "api:empresa-detalle", 
+                    reverse_name_list = "api:empresa",
+                    serialized_data_object = {
+                        "ruc": "2222222222222",
+                        "razon_social": "Nuevo Nombre Empresa",
+                        "nombre_comercial": "Empresa Dos comercial",
+                        "direccion": "direccion dos",
+                        "telefono": "telefono dos",
+                        "nombres_contacto": "nombres contacto dos",
+                        "cargo_contacto": "cargo contacto dos",
+                        "email_contacto": "prueba@dos.com",
+                        "telefono_contacto": "2222222",
+                        "inicio_contrato": "2023-01-01",
+                        "fin_contrato": "2023-12-31",
+                        "meses_disponible_datos": 3,
+                        "permitir_uso_varios_dispositivos": False,                        
+                        "estado_id": 1,
+                        },
+                    update_data_fields= {'razon_social': 'Empresa DOS',},                                        
+                    reverse_extra_param=False, 
+                    filter_condition=None,
+                    parent_instance_class=None
+                    )
+        
+    def test_detalle_get(self): self.generic_test_detalle_get()
+
+    def test_detalle_get_error(self): self.generic_test_detalle_get_error()
+
+    def test_detalle_put(self): self.generic_test_detalle_put()
+
+    def test_detalle_put_error(self): self.generic_test_detalle_put_error()
+
+    def test_detalle_delete(self): self.generic_test_detalle_delete()
+
+    def test_detalle_delete_error(self): self.generic_test_detalle_delete_error()
+
+    def test_listados_get(self): self.generic_test_listados_get()
+
+    def test_post(self): self.generic_test_post()
+
+    def test_post_error(self): self.generic_test_post_error()
+
+@tag('views1')
 class DepartamentoViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = Departamento, serializer_class = DepartamentoSerializer,
@@ -76,30 +124,95 @@ class DepartamentoViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
-@tag('views')
-class EmpresaViewTestCase(GenericViewTestCase):
+@tag('views1')
+class FeriadoViewTestCase(GenericViewTestCase):
     def setUp(self):
-        super().setUp(object_class = Empresa, serializer_class = EmpresaSerializer,
-                    reverse_name_detail = "api:empresa-detalle", 
-                    reverse_name_list = "api:empresa",
+        super().setUp(object_class = Feriado, serializer_class = FeriadoSerializer,
+                    reverse_name_detail = "api:feriado-detalle", 
+                    reverse_name_list = "api:feriado",
                     serialized_data_object = {
-                        "ruc": "2222222222222",
-                        "razon_social": "Nuevo Nombre Empresa",
-                        "nombre_comercial": "Empresa Dos comercial",
-                        "direccion": "direccion dos",
-                        "telefono": "telefono dos",
-                        "nombres_contacto": "nombres contacto dos",
-                        "cargo_contacto": "cargo contacto dos",
-                        "email_contacto": "prueba@dos.com",
-                        "telefono_contacto": "2222222",
-                        "inicio_contrato": "2023-01-01",
-                        "fin_contrato": "2023-12-31",
+                        "empresa_id": 1,
+                        "fecha": "2023-11-02",
+                        "descripcion": "Dia difuntos",
+                        "es_global": True,
                         "estado_id": 1,
                         },
-                    update_data_fields= {'razon_social': 'Empresa DOS',},                                        
-                    reverse_extra_param=False, 
-                    filter_condition=None,
-                    parent_instance_class=None
+                    update_data_fields= {'descripcion': 'Día de los difuntos',},                    
+                    reverse_extra_param=True, 
+                    filter_condition={"empresa__id":0},
+                    parent_instance_class=Empresa
+                    )
+        
+    def test_detalle_get(self): self.generic_test_detalle_get()
+
+    def test_detalle_get_error(self): self.generic_test_detalle_get_error()
+
+    def test_detalle_put(self): self.generic_test_detalle_put()
+
+    def test_detalle_put_error(self): self.generic_test_detalle_put_error()
+
+    def test_detalle_delete(self): self.generic_test_detalle_delete()
+
+    def test_detalle_delete_error(self): self.generic_test_detalle_delete_error()
+
+    def test_listados_get(self): self.generic_test_listados_get()
+
+    def test_post(self): self.generic_test_post()
+
+    def test_post_error(self): self.generic_test_post_error()
+
+
+@tag('views1')
+class CalendarioViewTestCase(GenericViewTestCase):
+    def setUp(self):
+        super().setUp(object_class = Calendario, serializer_class = CalendarioSerializer,
+                    reverse_name_detail = "api:calendario-detalle", 
+                    reverse_name_list = "api:calendario",
+                    serialized_data_object = {
+                        "empresa_id": 1,
+                        "nombre": "Jornada Nocturna",
+                        "descripcion": "Jornada semanal L-V 4pM-12PM",
+                        "estado_id": 1,
+                        },
+                    update_data_fields= {'descripcion': 'Día de los difuntos',},                    
+                    reverse_extra_param=True, 
+                    filter_condition={"empresa__id":0},
+                    parent_instance_class=Empresa
+                    )
+        
+    def test_detalle_get(self): self.generic_test_detalle_get()
+
+    def test_detalle_get_error(self): self.generic_test_detalle_get_error()
+
+    def test_detalle_put(self): self.generic_test_detalle_put()
+
+    def test_detalle_put_error(self): self.generic_test_detalle_put_error()
+
+    def test_detalle_delete(self): self.generic_test_detalle_delete()
+
+    def test_detalle_delete_error(self): self.generic_test_detalle_delete_error()
+
+    def test_listados_get(self): self.generic_test_listados_get()
+
+    def test_post(self): self.generic_test_post()
+
+    def test_post_error(self): self.generic_test_post_error()
+
+@tag('views1')
+class DiaViewTestCase(GenericViewTestCase):
+    def setUp(self):
+        super().setUp(object_class = Dia, serializer_class = DiaSerializer,
+                    reverse_name_detail = "api:dia-detalle", 
+                    reverse_name_list = "api:dia",
+                    serialized_data_object = {
+                        "calendario_id": 1,
+                        "dia_semana": 5,
+                        "estado_id": 1,
+                        },
+                    update_data_fields= {'dia_semana': 7,},                    
+                    reverse_extra_param=True, 
+                    filter_condition={"calendario__id":0},
+                    parent_instance_class=Calendario
                     )
         
     def test_detalle_get(self): self.generic_test_detalle_get()
@@ -121,21 +234,60 @@ class EmpresaViewTestCase(GenericViewTestCase):
     def test_post_error(self): self.generic_test_post_error()
 
 @tag('views')
-class TipoEventoViewTestCase(GenericViewTestCase):
+class FranjaTiempoViewTestCase(GenericViewTestCase):
     def setUp(self):
-        super().setUp(object_class = TipoEvento, serializer_class = TipoEventoSerializer,
-                    reverse_name_detail = "api:tipo-evento-detalle", 
-                    reverse_name_list = "api:tipo-evento",
+        super().setUp(object_class = FranjaTiempo, serializer_class = FranjaTiempoSerializer,
+                    reverse_name_detail = "api:franja-tiempo-detalle", 
+                    reverse_name_list = "api:franja-tiempo",
                     serialized_data_object = {
-                        "empresa_id": 1,
-                        "descripcion": "Nuevo Tipo Evento",
-                        "orden": 1,
+                        "calendario_id": 1,
+                        "descripcion": 'Horario nocturno trabajo 6PM a 12PM',
+                        "es_laborable": True,
+                        "tiene_horario_fijo": True,
+                        "duracion_minutos": 0,
+                        "hora_inicio": '18:00',
+                        "hora_fin": '23:59',
                         "estado_id": 1,
                         },
-                    update_data_fields= {'descripcion': 'FIN Jornada laboral',},                    
+                    update_data_fields= {'dia': 7,},                    
                     reverse_extra_param=True, 
-                    filter_condition={"empresa__id":0},
-                    parent_instance_class=Empresa
+                    filter_condition={"calendario__id":0},
+                    parent_instance_class=Calendario
+                    )
+        
+    def test_detalle_get(self): self.generic_test_detalle_get()
+
+    def test_detalle_get_error(self): self.generic_test_detalle_get_error()
+
+    def test_detalle_put(self): self.generic_test_detalle_put()
+
+    def test_detalle_put_error(self): self.generic_test_detalle_put_error()
+
+    def test_detalle_delete(self): self.generic_test_detalle_delete()
+
+    def test_detalle_delete_error(self): self.generic_test_detalle_delete_error()
+
+    def test_listados_get(self): self.generic_test_listados_get()
+
+    def test_post(self): self.generic_test_post()
+
+    def test_post_error(self): self.generic_test_post_error()
+
+@tag('views')
+class DiaFranjaTiempoViewTestCase(GenericViewTestCase):
+    def setUp(self):
+        super().setUp(object_class = DiaFranjaTiempo, serializer_class = DiaFranjaTiempoSerializer,
+                    reverse_name_detail = "api:dia-franja-tiempo-detalle", 
+                    reverse_name_list = "api:dia-franja-tiempo",
+                    serialized_data_object = {
+                    "dia_id": 5,
+                    "franja_tiempo_id": 1,
+                    "estado_id": 1
+                        },
+                    update_data_fields= {'dia_id': 4,},                    
+                    reverse_extra_param=True, 
+                    filter_condition={"franja_tiempo__id":0},
+                    parent_instance_class=FranjaTiempo
                     )
         
     def test_detalle_get(self): self.generic_test_detalle_get()
@@ -163,14 +315,16 @@ class UbicacionViewTestCase(GenericViewTestCase):
                     reverse_name_detail = "api:ubicacion-detalle", 
                     reverse_name_list = "api:ubicacion",
                     serialized_data_object = {
-                        "empresa_id": 1,
-                        "descripcion": "Nuevo Ubicacion",
+                        "empresa_id": 8,
+                        "descripcion": "Nueva Ubicacion",
                         "tipo_dato":  "point",
                         "coordenadas": [{"lat":-0.19041117621469852, "lon":-78.48837800323963}],
+                        "distancia_min": 0,
                         "distancia_max":  20,
-                        "estado_id": 1,
+                        "zona_horaria": "",
+                        "estado_id": 8,
                         },
-                    update_data_fields= {'descripcion': 'RPDMQ',},                    
+                    update_data_fields= {'descripcion': 'UISRAEL',},                    
                     reverse_extra_param=True, 
                     filter_condition={"empresa__id":0},
                     parent_instance_class=Empresa
@@ -201,18 +355,19 @@ class EmpleadoViewTestCase(GenericViewTestCase):
                     reverse_name_detail = "api:empleado-detalle", 
                     reverse_name_list = "api:empleado",
                     serialized_data_object = {
-                        "cedula": '0600000000',
+                        "empresa_id": 8,
+                        "cedula": '0600000001',
                         "nombres":  'Benjamin',
                         "apellidos": 'Nuevo Apellidos',
                         "foto": None,
                         "celular": '0999999999',
-                        "departamento_id": 1,
-                        "ubicacion_id": 1,
-                        "estado_id": 1,
+                        "departamento_id": 8,
+                        "calendario_id": 8,
+                        "estado_id": 8,
                         },
                     update_data_fields= {'apellidos': 'Cepeda',},                    
                     reverse_extra_param=True, 
-                    filter_condition={"departamento__empresa__id":0},
+                    filter_condition={"empresa__id":0},
                     parent_instance_class=Empresa
                     )
                 
@@ -243,12 +398,47 @@ class PerfilViewTestCase(GenericViewTestCase):
                     serialized_data_object = {
                         'descripcion': 'Nuevo Perfil',
                         'es_administrador': 1,
-                        'estado_id':1,                        
+                        'estado_id':8,                        
                         },
                     update_data_fields= {'descripcion': 'Supervisor',},
                     reverse_extra_param=False, 
                     filter_condition=None,
                     parent_instance_class=None
+                    )
+        
+    def test_detalle_get(self): self.generic_test_detalle_get()
+
+    def test_detalle_get_error(self): self.generic_test_detalle_get_error()
+
+    def test_detalle_put(self): self.generic_test_detalle_put()
+
+    def test_detalle_put_error(self): self.generic_test_detalle_put_error()
+
+    def test_detalle_delete(self): self.generic_test_detalle_delete()
+
+    def test_detalle_delete_error(self): self.generic_test_detalle_delete_error()
+
+    def test_listados_get(self): self.generic_test_listados_get()
+
+    def test_post(self): self.generic_test_post()
+
+    def test_post_error(self): self.generic_test_post_error()
+
+@tag('views')
+class EmpleadoUbicacionViewTestCase(GenericViewTestCase):
+    def setUp(self):
+        super().setUp(object_class = EmpleadoUbicacion, serializer_class = EmpleadoUbicacionSerializer,
+                    reverse_name_detail = "api:empleado-ubicacion-detalle", 
+                    reverse_name_list = "api:empleado-ubicacion",
+                    serialized_data_object = {
+                        "empleado_id": 1,
+                        "ubicacion_id": 1,
+                        "estado_id": 1,                        
+                        },
+                    update_data_fields= {'ubicacion_id': 1,},
+                    reverse_extra_param=True, 
+                    filter_condition={"empleado__id":0},
+                    parent_instance_class=Empleado
                     )
         
     def test_detalle_get(self): self.generic_test_detalle_get()
@@ -307,3 +497,5 @@ class UsuarioViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
+# c = CustomIniDataClass()
+# c.init_data_test()

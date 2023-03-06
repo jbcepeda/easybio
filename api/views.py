@@ -103,14 +103,13 @@ class EmpresaDetalle(GenericObjectDetail):
 class Empresas(GenericObjects):
     def __init__(self):
         super().__init__(object_class=Empresa, serializer_class=EmpresaSerializer, kwargs=None)
-  
-class TipoEventoDetalle(GenericObjectDetail):
+class EmpresaGrupoDetalle(GenericObjectDetail):
     def __init__(self):
-        super().__init__(object_class=TipoEvento, serializer_class=TipoEventoSerializer)
+        super().__init__(EmpresaGrupo, EmpresaGrupoSerializer)
 
-class TipoEventos(GenericObjects):
+class EmpresaGrupos(GenericObjects):
     def __init__(self):
-        super().__init__(object_class=TipoEvento, serializer_class=TipoEventoSerializer, kwargs={'empresa__id':0})
+        super().__init__(object_class=EmpresaGrupo, serializer_class=EmpresaGrupoSerializer, kwargs=None)
 
 class DepartamentoDetalle(GenericObjectDetail):
     def __init__(self):
@@ -120,6 +119,51 @@ class Departamentos(GenericObjects):
     def __init__(self):
         super().__init__(object_class=Departamento, serializer_class = DepartamentoSerializer,
                           kwargs={'empresa__id':0})
+
+class FeriadoDetalle(GenericObjectDetail):
+    def __init__(self):
+        super().__init__(Feriado, FeriadoSerializer)
+
+class Feriados(GenericObjects):
+    def __init__(self):
+        super().__init__(object_class=Feriado, serializer_class = FeriadoSerializer,
+                          kwargs={'empresa__id':0})
+
+class CalendarioDetalle(GenericObjectDetail):
+    def __init__(self):
+        super().__init__(Calendario, CalendarioSerializer)
+
+class Calendarios(GenericObjects):
+    def __init__(self):
+        super().__init__(object_class=Calendario, serializer_class = CalendarioSerializer,
+                          kwargs={'empresa__id':0})
+
+class DiaDetalle(GenericObjectDetail):
+    def __init__(self):
+        super().__init__(Dia, DiaSerializer)
+
+class Dias(GenericObjects):
+    def __init__(self):
+        super().__init__(object_class=Dia, serializer_class = DiaSerializer,
+                          kwargs={'calendario__id':0})
+        
+class FranjaTiempoDetalle(GenericObjectDetail):
+    def __init__(self):
+        super().__init__(FranjaTiempo, FranjaTiempoSerializer)
+
+class FranjaTiempos(GenericObjects):
+    def __init__(self):
+        super().__init__(object_class=FranjaTiempo, serializer_class = FranjaTiempoSerializer,
+                          kwargs={'calendario__id':0})
+        
+class DiaFranjaTiempoDetalle(GenericObjectDetail):
+    def __init__(self):
+        super().__init__(DiaFranjaTiempo, DiaFranjaTiempoSerializer)
+
+class DiaFranjaTiempos(GenericObjects):
+    def __init__(self):
+        super().__init__(object_class=DiaFranjaTiempo, serializer_class = DiaFranjaTiempoSerializer,
+                          kwargs={'franja_tiempo__id':0})
 
 class UbicacionDetalle(GenericObjectDetail):
     def __init__(self):
@@ -155,7 +199,16 @@ class EmpleadoDetalle(GenericObjectDetail):
 class Empleados(GenericObjects):
     def __init__(self):
         super().__init__(object_class=Empleado, serializer_class = EmpleadoSerializer,
-                          kwargs={'departamento__empresa__id':0})
+                          kwargs={'empresa__id':0})
+        
+class EmpleadoUbicacionDetalle(GenericObjectDetail):
+    def __init__(self):
+        super().__init__(EmpleadoUbicacion, EmpleadoUbicacionSerializer)
+                        
+class EmpleadoUbicaciones(GenericObjects):
+    def __init__(self):
+        super().__init__(object_class=EmpleadoUbicacion, serializer_class = EmpleadoUbicacionSerializer,
+                          kwargs={'empleado__id':0})
 class LoginAppView(APIView):
     def post(self, request):
         try:
