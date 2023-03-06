@@ -206,10 +206,10 @@ class DiaViewTestCase(GenericViewTestCase):
                     reverse_name_list = "api:dia",
                     serialized_data_object = {
                         "calendario_id": 1,
-                        "dia_semana": 5,
+                        "dia_semana": 2,
                         "estado_id": 1,
                         },
-                    update_data_fields= {'dia_semana': 7,},                    
+                    update_data_fields= {'dia_semana': 3,},                    
                     reverse_extra_param=True, 
                     filter_condition={"calendario__id":0},
                     parent_instance_class=Calendario
