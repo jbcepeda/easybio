@@ -19,17 +19,19 @@ class GenericViewTestCase(APITestCase, CustomIniDataClass):
         self.serializer_class = serializer_class
         self.reverse_name_detail = reverse_name_detail
         self.reverse_name_list = reverse_name_list
-        self.instance_class = self.object_class.objects.all().first()
+        self.instance_class = self.object_class.objects.all().last()
         self.serialized_data_object = serialized_data_object        
         self.update_data_fields = update_data_fields
         self.reverse_extra_param = reverse_extra_param,
         self.filter_condition = filter_condition
         self.parent_instance_class = parent_instance_class
-        # for k, v in self.serialized_data_object.items():
-        #     # put_data[k] = v
-        #     if "_id" in k:
-        #         logger.debug('k: {}  v: {} PRIMERO: {} CLASS: {}'.format(k,v, self.instance_class.id, type(self.instance_class)))
-        
+        codigo = self.instance_class.id
+        if self.reverse_extra_param and parent_instance_class:
+            codigo = self.parent_instance_class.objects.all().last().id
+        for k, v in self.serialized_data_object.items():
+            if "_id" in k:
+                self.serialized_data_object[k] = codigo
+        logger.debug("NUEVOS VALORES: {}".format(self.serialized_data_object))
         return super().setUp()    
 
     def generic_test_detalle_get(self):
@@ -69,6 +71,7 @@ class GenericViewTestCase(APITestCase, CustomIniDataClass):
         self.instance_class = self.object_class.objects.create(**self.serialized_data_object)
         url = reverse(self.reverse_name_detail, kwargs={'id':self.instance_class.id})
         r = self.client.delete(url)
+        self.instance_class = self.object_class.objects.all().last()
         self.assertEqual(r.status_code, status.HTTP_204_NO_CONTENT)
 
     def generic_test_detalle_delete_error(self):
@@ -101,7 +104,7 @@ class GenericViewTestCase(APITestCase, CustomIniDataClass):
         serializer = self.serializer_class(self.instance_class, many = False)
         logger.debug("POST-BEFORE: {}".format(str(serializer.data)))
         r = self.client.post(url, serializer.data, format="json")
-        logger.debug("POST-Resultado: {}".format(str(r.data)))
+        # logger.debug("POST-Resultado: {}".format(str(r.data)))
         self.instance_class = self.object_class.objects.get(pk=r.data["id"])
         serializer = self.serializer_class(self.instance_class, many = False)
         self.assertEqual(r.data,serializer.data)

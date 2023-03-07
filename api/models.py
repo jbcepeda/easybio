@@ -31,26 +31,26 @@ class Empresa(CustomModel, models.Model):
     telefono_contacto = models.CharField(max_length=14, null=False)
     inicio_contrato = models.DateField(null=False)
     fin_contrato = models.DateField(null=False)
-    codigo_asignado = models.UUIDField(unique=True, default=uuid.uuid4,editable=False)
+    codigo_asignado = models.UUIDField(default=uuid.uuid4,editable=False)
     meses_disponible_datos=models.SmallIntegerField()
     permitir_uso_varios_dispositivos=models.BooleanField()
-    estado = models.ForeignKey(Estado, on_delete=models.RESTRICT, null=False,
+    estado = models.ForeignKey(Estado, on_delete=models.RESTRICT, 
                                  related_name='empresa_estado')
     
 class EmpresaGrupo(CustomModel, models.Model):
     empresa = models.OneToOneField(
         Empresa,
-        on_delete=models.RESTRICT,
+        on_delete=models.RESTRICT, null=False,
         primary_key=True,)
     grupo = models.ForeignKey(
         Empresa,
-        on_delete=models.RESTRICT,
+        on_delete=models.RESTRICT, null=False,
         related_name='empresa_grupo_grupo',)
 
 class Departamento(CustomModel, models.Model):
     empresa = models.ForeignKey(
         Empresa,
-        on_delete=models.RESTRICT,
+        on_delete=models.RESTRICT, null=False,
         related_name='departamento_empresa',
     )
     descripcion = models.CharField(max_length=100, null=False)
@@ -62,7 +62,7 @@ class Departamento(CustomModel, models.Model):
 class Feriado(CustomModel, models.Model):
     empresa = models.ForeignKey(
         Empresa,
-        on_delete=models.RESTRICT,
+        on_delete=models.RESTRICT,  null=False,
         related_name='feriado_empresa',
     )
     fecha = models.DateField(null=False)
@@ -77,7 +77,7 @@ class Feriado(CustomModel, models.Model):
 class Calendario(CustomModel, models.Model):
     empresa = models.ForeignKey(
         Empresa,
-        on_delete=models.RESTRICT,
+        on_delete=models.RESTRICT, null=False,
         related_name='calendario_empresa',
     )
     nombre=models.CharField(max_length=20, null=False)
@@ -90,11 +90,11 @@ class Calendario(CustomModel, models.Model):
 class Dia(models.Model):
     calendario = models.ForeignKey(
         Calendario,
-        on_delete=models.RESTRICT,
+        on_delete=models.RESTRICT, null=False,
         related_name='dia_calendario',
     )
     dia_semana = models.SmallIntegerField(
-        default=1,
+        null=False,
         validators=[MaxValueValidator(7), MinValueValidator(1)]
     )
     estado = models.ForeignKey(Estado, on_delete=models.RESTRICT, null=False,
@@ -106,7 +106,7 @@ class Dia(models.Model):
 class FranjaTiempo(CustomModel, models.Model):
     calendario = models.ForeignKey(
         Calendario,
-        on_delete=models.RESTRICT,
+        on_delete=models.RESTRICT, null=False,
         related_name='franja_tiempo_calendario',
     )
     descripcion = models.CharField(max_length=50, null=False)
@@ -131,12 +131,12 @@ class FranjaTiempo(CustomModel, models.Model):
 class DiaFranjaTiempo(CustomModel, models.Model):
     dia  = models.ForeignKey(
         Dia,
-        on_delete=models.RESTRICT,
+        on_delete=models.RESTRICT, null=False,
         related_name='dia_franja_tiempo_dia'
     )
     franja_tiempo = models.ForeignKey(
-        FranjaTiempo,
-        on_delete=models.RESTRICT,
+        FranjaTiempo, 
+        on_delete=models.RESTRICT, null=False,
         related_name='dia_franja_tiempo_franja_tiempo'
     )
     estado = models.ForeignKey(Estado, on_delete=models.RESTRICT, null=False,
@@ -156,7 +156,7 @@ class Ubicacion(CustomModel, models.Model):
     #TIPOS = (('point','point'), ('polygon','polygon'))
     empresa = models.ForeignKey(
         Empresa,
-        on_delete=models.RESTRICT, null = False,
+        on_delete=models.RESTRICT,
         related_name='ubicacion_empresa',
     )
     descripcion = models.CharField(max_length = 100, null=False)
@@ -164,8 +164,8 @@ class Ubicacion(CustomModel, models.Model):
     coordenadas = models.ArrayField(model_container=Coordenada)
     distancia_min = models.IntegerField(default = 0)
     distancia_max =  models.IntegerField(default = 50)
-    zona_horaria = models.CharField(max_length = 50)        
-    estado = models.ForeignKey(Estado, on_delete = models.RESTRICT, null = False,
+    zona_horaria = models.CharField(max_length = 50, null=True)        
+    estado = models.ForeignKey(Estado, on_delete = models.RESTRICT, 
                                  related_name = 'ubicacion_estado')
     
 class Empleado(CustomModel, models.Model):

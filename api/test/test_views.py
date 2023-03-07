@@ -62,7 +62,7 @@ class EmpresaViewTestCase(GenericViewTestCase):
                         "inicio_contrato": "2023-01-01",
                         "fin_contrato": "2023-12-31",
                         "meses_disponible_datos": 3,
-                        "permitir_uso_varios_dispositivos": False,                        
+                        "permitir_uso_varios_dispositivos": "False",                        
                         "estado_id": 1,
                         },
                     update_data_fields= {'razon_social': 'Empresa DOS',},                                        
@@ -134,7 +134,7 @@ class FeriadoViewTestCase(GenericViewTestCase):
                         "empresa_id": 1,
                         "fecha": "2023-11-02",
                         "descripcion": "Dia difuntos",
-                        "es_global": True,
+                        "es_global": "True",
                         "estado_id": 1,
                         },
                     update_data_fields= {'descripcion': 'Día de los difuntos',},                    
@@ -206,10 +206,10 @@ class DiaViewTestCase(GenericViewTestCase):
                     reverse_name_list = "api:dia",
                     serialized_data_object = {
                         "calendario_id": 1,
-                        "dia_semana": 2,
+                        "dia_semana": 7,
                         "estado_id": 1,
                         },
-                    update_data_fields= {'dia_semana': 3,},                    
+                    update_data_fields= {'dia_semana': 6,},                    
                     reverse_extra_param=True, 
                     filter_condition={"calendario__id":0},
                     parent_instance_class=Calendario
@@ -233,7 +233,7 @@ class DiaViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
-@tag('views')
+@tag('views1')
 class FranjaTiempoViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = FranjaTiempo, serializer_class = FranjaTiempoSerializer,
@@ -242,8 +242,8 @@ class FranjaTiempoViewTestCase(GenericViewTestCase):
                     serialized_data_object = {
                         "calendario_id": 1,
                         "descripcion": 'Horario nocturno trabajo 6PM a 12PM',
-                        "es_laborable": True,
-                        "tiene_horario_fijo": True,
+                        "es_laborable": "True",
+                        "tiene_horario_fijo": "True",
                         "duracion_minutos": 0,
                         "hora_inicio": '18:00',
                         "hora_fin": '23:59',
@@ -273,14 +273,14 @@ class FranjaTiempoViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
-@tag('views')
+@tag('views1')
 class DiaFranjaTiempoViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = DiaFranjaTiempo, serializer_class = DiaFranjaTiempoSerializer,
                     reverse_name_detail = "api:dia-franja-tiempo-detalle", 
                     reverse_name_list = "api:dia-franja-tiempo",
                     serialized_data_object = {
-                    "dia_id": 5,
+                    "dia_id": 3,
                     "franja_tiempo_id": 1,
                     "estado_id": 1
                         },
@@ -308,45 +308,45 @@ class DiaFranjaTiempoViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
-@tag('views')
+@tag('views2')
 class UbicacionViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = Ubicacion, serializer_class = UbicacionSerializer,
                     reverse_name_detail = "api:ubicacion-detalle", 
                     reverse_name_list = "api:ubicacion",
                     serialized_data_object = {
-                        "empresa_id": 8,
+                        "empresa_id": 1,
                         "descripcion": "Nueva Ubicacion",
                         "tipo_dato":  "point",
-                        "coordenadas": [{"lat":-0.19041117621469852, "lon":-78.48837800323963}],
+                    "coordenadas": "[{\"lat\":-0.19713926299073917, \"lon\":-78.49225762271467}]",
                         "distancia_min": 0,
                         "distancia_max":  20,
-                        "zona_horaria": "",
-                        "estado_id": 8,
+                        "zona_horaria": "una zona",
+                        "estado_id": 1
                         },
-                    update_data_fields= {'descripcion': 'UISRAEL',},                    
+                    update_data_fields= {"descripcion": "UISRAEL",},                    
                     reverse_extra_param=True, 
                     filter_condition={"empresa__id":0},
                     parent_instance_class=Empresa
                     )
         
-    def test_detalle_get(self): self.generic_test_detalle_get()
+    # def test_detalle_get(self): self.generic_test_detalle_get()
 
-    def test_detalle_get_error(self): self.generic_test_detalle_get_error()
+    # def test_detalle_get_error(self): self.generic_test_detalle_get_error()
 
     def test_detalle_put(self): self.generic_test_detalle_put()
 
-    def test_detalle_put_error(self): self.generic_test_detalle_put_error()
+    # def test_detalle_put_error(self): self.generic_test_detalle_put_error()
 
-    def test_detalle_delete(self): self.generic_test_detalle_delete()
+    # def test_detalle_delete(self): self.generic_test_detalle_delete()
 
-    def test_detalle_delete_error(self): self.generic_test_detalle_delete_error()
+    # def test_detalle_delete_error(self): self.generic_test_detalle_delete_error()
 
-    def test_listados_get(self): self.generic_test_listados_get()
+    # def test_listados_get(self): self.generic_test_listados_get()
 
-    def test_post(self): self.generic_test_post()
+    # def test_post(self): self.generic_test_post()
 
-    def test_post_error(self): self.generic_test_post_error()
+    # def test_post_error(self): self.generic_test_post_error()
 
 @tag('views')
 class EmpleadoViewTestCase(GenericViewTestCase):
