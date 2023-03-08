@@ -78,7 +78,7 @@ class CustomIniDataClass(object):
             coordenadas = [{"lat":-0.19041117621469852, "lon":-78.48837800323963}],
             distancia_min =  0,
             distancia_max =  20,
-            zona_horaria = "",
+            zona_horaria = "Zona default",
             estado = self.estado
         )
         

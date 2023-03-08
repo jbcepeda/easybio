@@ -161,10 +161,10 @@ class Ubicacion(CustomModel, models.Model):
     )
     descripcion = models.CharField(max_length = 100, null=False)
     tipo_dato = models.CharField(max_length = 10, default = 'point')
-    coordenadas = models.ArrayField(model_container=Coordenada)
+    coordenadas = models.ArrayField(model_container=Coordenada, null=False)
     distancia_min = models.IntegerField(default = 0)
     distancia_max =  models.IntegerField(default = 50)
-    zona_horaria = models.CharField(max_length = 50, null=True)        
+    zona_horaria = models.CharField(max_length = 50, null=False)        
     estado = models.ForeignKey(Estado, on_delete = models.RESTRICT, 
                                  related_name = 'ubicacion_estado')
     

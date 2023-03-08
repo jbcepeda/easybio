@@ -31,7 +31,6 @@ class GenericViewTestCase(APITestCase, CustomIniDataClass):
         for k, v in self.serialized_data_object.items():
             if "_id" in k:
                 self.serialized_data_object[k] = codigo
-        logger.debug("NUEVOS VALORES: {}".format(self.serialized_data_object))
         return super().setUp()    
 
     def generic_test_detalle_get(self):
@@ -99,10 +98,7 @@ class GenericViewTestCase(APITestCase, CustomIniDataClass):
         logger.debug(str(self.object_class))
         url = reverse(self.reverse_name_list)
         self.instance_class = self.object_class(**self.serialized_data_object)
-        logger.debug("Empresa: {} Departamento: {} Calendario:{} Estado: {} ubicacion: {}".
-                     format(self.empresa.id, self.departamento.id, self.calendario.id, self.estado.id, self.ubicacion))
         serializer = self.serializer_class(self.instance_class, many = False)
-        logger.debug("POST-BEFORE: {}".format(str(serializer.data)))
         r = self.client.post(url, serializer.data, format="json")
         # logger.debug("POST-Resultado: {}".format(str(r.data)))
         self.instance_class = self.object_class.objects.get(pk=r.data["id"])

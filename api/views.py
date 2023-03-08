@@ -33,6 +33,7 @@ class GenericObjectDetail(APIView):
                 if serializer.is_valid():
                     serializer.save()
                     return Response(serializer.data, status=status.HTTP_200_OK)
+                logger.debug("SERIALIZE ERRORS {}".format(serializer.errors))
         except Exception as ex:
             logger.error(str(ex), extra={'className': self.__class__.__name__})
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -75,6 +76,7 @@ class GenericObjects(APIView):
             if request and len(request.data)>0 and serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status = status.HTTP_201_CREATED)
+            logger.debug("SERIALIZE ERRORS {}".format(serializer.errors))
         except Exception as ex:
             logger.error(str(ex), extra={'className': self.__class__.__name__})
         return Response(status=status.HTTP_400_BAD_REQUEST)

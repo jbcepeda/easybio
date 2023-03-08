@@ -318,31 +318,31 @@ class UbicacionViewTestCase(GenericViewTestCase):
                         "empresa_id": 1,
                         "descripcion": "Nueva Ubicacion",
                         "tipo_dato":  "point",
-                    "coordenadas": "[{\"lat\":-0.19713926299073917, \"lon\":-78.49225762271467}]",
+                        "coordenadas": "[{\'lat\':\'-0.19713926299073917\', \'lon\':\'-78.49225762271467\'}]",
                         "distancia_min": 0,
                         "distancia_max":  20,
                         "zona_horaria": "una zona",
                         "estado_id": 1
                         },
-                    update_data_fields= {"descripcion": "UISRAEL",},                    
+                    update_data_fields= {"descripcion": "UISRAEL1", "zona_horaria":"Zona"},                    
                     reverse_extra_param=True, 
                     filter_condition={"empresa__id":0},
                     parent_instance_class=Empresa
                     )
         
-    # def test_detalle_get(self): self.generic_test_detalle_get()
+    def test_detalle_get(self): self.generic_test_detalle_get()
 
-    # def test_detalle_get_error(self): self.generic_test_detalle_get_error()
+    def test_detalle_get_error(self): self.generic_test_detalle_get_error()
 
     def test_detalle_put(self): self.generic_test_detalle_put()
 
-    # def test_detalle_put_error(self): self.generic_test_detalle_put_error()
+    def test_detalle_put_error(self): self.generic_test_detalle_put_error()
 
-    # def test_detalle_delete(self): self.generic_test_detalle_delete()
+    def test_detalle_delete(self): self.generic_test_detalle_delete()
 
-    # def test_detalle_delete_error(self): self.generic_test_detalle_delete_error()
+    def test_detalle_delete_error(self): self.generic_test_detalle_delete_error()
 
-    # def test_listados_get(self): self.generic_test_listados_get()
+    def test_listados_get(self): self.generic_test_listados_get()
 
     # def test_post(self): self.generic_test_post()
 
