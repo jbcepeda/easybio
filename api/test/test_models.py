@@ -19,11 +19,11 @@ class CustomFunctionsTestCase(APITestCase, CustomIniDataClass):
         return super().setUp()
     
     def test_valida_dentro_rango_punto(self):
-        lat = -0.19044428987472398
-        lon = -78.4882888957929
+        lat = -0.1972036724247378
+        lon = -78.49232197782605
         tipo_dato = 'point'
-        en_rango, distancia_actual = custom_functions.valida_rango(tipo_dato = tipo_dato, \
-            coordenadas_ubicacion = self.ubicacion.coordenadas, distancia_max = self.ubicacion.distancia_max, \
+        en_rango, distancia_actual = custom_functions.valida_rango(tipo_dato = tipo_dato, 
+            coordenadas_ubicacion = self.ubicacion.coordenadas, distancia_max = self.ubicacion.distancia_max, 
                 lat = lat, lon = lon)
         self.assertEqual(en_rango, True)
 
@@ -249,7 +249,7 @@ class EventoEmpleadoTestCase(APITestCase, CustomIniDataClass):
 
     def test_evento_empleado_en_rango(self):
         _result = False
-        _coordenada = {"lat": -0.19044383946406043, "lon": -78.48829875522068}
+        _coordenada = {"lat": -0.1972251299693286, "lon": -78.49219323179332}
         self.evento_empleado = EventoEmpleado.objects.create(   
             empleado = self.empleado, 
             dia_franja_tiempo = self.dia_franja_tiempo,

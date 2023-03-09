@@ -38,14 +38,14 @@ class CustomIniDataClass(object):
             fecha = "2023-05-01",
             descripcion = "Dia del trabajo",
             es_global = True,
-            estado = self.estado,
+            estado = self.estado
         )
         
         self.calendario = Calendario.objects.create(
             empresa = self.empresa,
             nombre='jornada normal',
             descripcion='Jornada semanal L-V 9AM-5PM',
-            estado = self.estado,
+            estado = self.estado
         )
 
         self.dia = Dia.objects.create(calendario = self.calendario, dia_semana = 1, estado = self.estado)

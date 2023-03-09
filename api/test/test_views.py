@@ -348,7 +348,7 @@ class UbicacionViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
-@tag('views1')
+@tag('views')
 class EmpleadoViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = Empleado, serializer_class = EmpleadoSerializer,
@@ -424,7 +424,7 @@ class PerfilViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
-@tag('views2')
+@tag('views')
 class EmpleadoUbicacionViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = EmpleadoUbicacion, serializer_class = EmpleadoUbicacionSerializer,
@@ -459,7 +459,7 @@ class EmpleadoUbicacionViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
-@tag('views2')
+@tag('views')
 class UsuarioViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = Usuario, serializer_class = UsuarioSerializer,
@@ -470,7 +470,7 @@ class UsuarioViewTestCase(GenericViewTestCase):
                         'empleado_id': 1,
                         'clave': '1234',
                         'perfil_id': 1,
-                        'estado_id': 1,
+                        'estado_id': 1
                     },
                     update_data_fields= {'nombre_usuario': 'aiza',
                                          "clave": "123456"},                    

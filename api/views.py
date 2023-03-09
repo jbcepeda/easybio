@@ -192,7 +192,7 @@ class UsuarioDetalle(GenericObjectDetail):
 class Usuarios(GenericObjects):
     def __init__(self):
         super().__init__(object_class=Usuario, serializer_class = UsuarioSerializer,
-                          kwargs={'empleado__ubicacion__empresa__id':0})
+                          kwargs={'empleado__empresa__id':0})
         
 class EmpleadoDetalle(GenericObjectDetail):
     def __init__(self):
