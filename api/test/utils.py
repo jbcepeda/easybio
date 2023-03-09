@@ -81,7 +81,7 @@ class CustomIniDataClass(object):
             zona_horaria = "Zona default",
             estado = self.estado
         )
-        
+         
         self.ubicacion = Ubicacion.objects.create(
             empresa = self.empresa,
             descripcion = "Uisrael",

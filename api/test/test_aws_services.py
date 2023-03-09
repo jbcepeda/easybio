@@ -13,7 +13,7 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 @tag('aws')
-class TokeViewTestCase(APITestCase):
+class AWSViewTestCase(APITestCase):
     def setUp(self):
         logger.debug("SETUP {}".format(str(self.__class__.__name__)))
         return super().setUp()

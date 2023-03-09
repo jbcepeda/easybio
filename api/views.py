@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db.models.query_utils import Q
 import logging
-from api.token_features.authorization import *
+from api.auth_features.authorization import *
 logger = logging.getLogger(__name__)
 
 class GenericObjectDetail(APIView):
@@ -214,7 +214,7 @@ class EmpleadoUbicaciones(GenericObjects):
 class LoginAppView(APIView):
     def post(self, request):
         try:
-            return Response(status = status.HTTP_201_CREATED)
+            return Response(status = status.HTTP_200_OK)
         except Exception as ex:
             logger.error(str(ex), extra={'className': self.__class__.__name__})
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -227,11 +227,25 @@ class GeneralTokenView(APIView):
             if _t and _d:
                 _v, _d = GeneralTokenAutorization.validate(t=_t, d=_d) 
                 if _v:
-                    return Response( data={'d':_d},status = status.HTTP_200_OK)
+                    dt={'d':_d}
+                    return Response( data=str(dt).encode(),status = status.HTTP_200_OK)
         except Exception as ex:
             logger.error(str(ex), extra={'className': self.__class__.__name__})
         return Response(status=status.HTTP_401_UNAUTHORIZED)
-    
+ 
+class CompanyTokenView(APIView):
+    def post(self, request):
+        try:
+            _dt = self.request.data.get('dt')
+            _d = self.request.data.get('d')
+            if _dt and _d:
+                _v, _d = GeneralTokenAutorization.validate(t=_t, d=_d) 
+                if _v:
+                    return Response( data={'d':_d},status = status.HTTP_200_OK)
+        except Exception as ex:
+            logger.error(str(ex), extra={'className': self.__class__.__name__})
+        return Response(status=status.HTTP_401_UNAUTHORIZED)   
+
 def error400View(request, exception):
     return render(request, 'error_404.html', status = 400)
 
