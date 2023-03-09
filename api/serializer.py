@@ -80,7 +80,7 @@ class UbicacionSerializer(serializers.ModelSerializer):
 class EmpleadoSerializer(serializers.ModelSerializer):
     empresa = EmpresaSerializer(many=False, read_only=True)
     departamento = DepartamentoSerializer(many=False, read_only=True)
-    Calendario = CalendarioSerializer(many=True, read_only=True)
+    calendario = CalendarioSerializer(many=True, read_only=True)
     estado = EstadoSerializer(many=False, read_only=True)
 
     class Meta:

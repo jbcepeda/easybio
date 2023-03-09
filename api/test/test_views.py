@@ -12,7 +12,7 @@ from api.test.utils import CustomIniDataClass
 
 logger = logging.getLogger(__name__)
 
-@tag('views1')
+@tag('views')
 class EstadoViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = Estado, serializer_class = EstadoSerializer,
@@ -43,7 +43,7 @@ class EstadoViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
-@tag('views1')
+@tag('views')
 class EmpresaViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = Empresa, serializer_class = EmpresaSerializer,
@@ -89,7 +89,7 @@ class EmpresaViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
-@tag('views1')
+@tag('views')
 class DepartamentoViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = Departamento, serializer_class = DepartamentoSerializer,
@@ -124,7 +124,7 @@ class DepartamentoViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
-@tag('views1')
+@tag('views')
 class FeriadoViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = Feriado, serializer_class = FeriadoSerializer,
@@ -162,7 +162,7 @@ class FeriadoViewTestCase(GenericViewTestCase):
     def test_post_error(self): self.generic_test_post_error()
 
 
-@tag('views1')
+@tag('views')
 class CalendarioViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = Calendario, serializer_class = CalendarioSerializer,
@@ -198,7 +198,7 @@ class CalendarioViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
-@tag('views1')
+@tag('views')
 class DiaViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = Dia, serializer_class = DiaSerializer,
@@ -233,7 +233,7 @@ class DiaViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
-@tag('views1')
+@tag('views')
 class FranjaTiempoViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = FranjaTiempo, serializer_class = FranjaTiempoSerializer,
@@ -273,7 +273,7 @@ class FranjaTiempoViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
-@tag('views1')
+@tag('views')
 class DiaFranjaTiempoViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = DiaFranjaTiempo, serializer_class = DiaFranjaTiempoSerializer,
@@ -308,7 +308,7 @@ class DiaFranjaTiempoViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
-@tag('views2')
+@tag('views')
 class UbicacionViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = Ubicacion, serializer_class = UbicacionSerializer,
@@ -318,7 +318,7 @@ class UbicacionViewTestCase(GenericViewTestCase):
                         "empresa_id": 1,
                         "descripcion": "Nueva Ubicacion",
                         "tipo_dato":  "point",
-                        "coordenadas": "[{\'lat\':\'-0.19713926299073917\', \'lon\':\'-78.49225762271467\'}]",
+                        "coordenadas": [{"lat":"-0.19713926299073917", "lon":"-78.49225762271467"}],
                         "distancia_min": 0,
                         "distancia_max":  20,
                         "zona_horaria": "una zona",
@@ -344,26 +344,26 @@ class UbicacionViewTestCase(GenericViewTestCase):
 
     def test_listados_get(self): self.generic_test_listados_get()
 
-    # def test_post(self): self.generic_test_post()
+    def test_post(self): self.generic_test_post()
 
-    # def test_post_error(self): self.generic_test_post_error()
+    def test_post_error(self): self.generic_test_post_error()
 
-@tag('views')
+@tag('views1')
 class EmpleadoViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = Empleado, serializer_class = EmpleadoSerializer,
                     reverse_name_detail = "api:empleado-detalle", 
                     reverse_name_list = "api:empleado",
                     serialized_data_object = {
-                        "empresa_id": 8,
+                        "empresa_id": 1,
                         "cedula": '0600000001',
                         "nombres":  'Benjamin',
                         "apellidos": 'Nuevo Apellidos',
                         "foto": None,
                         "celular": '0999999999',
-                        "departamento_id": 8,
-                        "calendario_id": 8,
-                        "estado_id": 8,
+                        "departamento_id": 1,
+                        "calendario_id": 1,
+                        "estado_id": 1,
                         },
                     update_data_fields= {'apellidos': 'Cepeda',},                    
                     reverse_extra_param=True, 
@@ -424,7 +424,7 @@ class PerfilViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
-@tag('views')
+@tag('views2')
 class EmpleadoUbicacionViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = EmpleadoUbicacion, serializer_class = EmpleadoUbicacionSerializer,
@@ -432,10 +432,10 @@ class EmpleadoUbicacionViewTestCase(GenericViewTestCase):
                     reverse_name_list = "api:empleado-ubicacion",
                     serialized_data_object = {
                         "empleado_id": 1,
-                        "ubicacion_id": 1,
+                        "ubicacion_id": 2,
                         "estado_id": 1,                        
                         },
-                    update_data_fields= {'ubicacion_id': 1,},
+                    update_data_fields= {'ubicacion_id': 2,},
                     reverse_extra_param=True, 
                     filter_condition={"empleado__id":0},
                     parent_instance_class=Empleado
@@ -459,7 +459,7 @@ class EmpleadoUbicacionViewTestCase(GenericViewTestCase):
 
     def test_post_error(self): self.generic_test_post_error()
 
-@tag('views')
+@tag('views2')
 class UsuarioViewTestCase(GenericViewTestCase):
     def setUp(self):
         super().setUp(object_class = Usuario, serializer_class = UsuarioSerializer,
@@ -475,7 +475,7 @@ class UsuarioViewTestCase(GenericViewTestCase):
                     update_data_fields= {'nombre_usuario': 'aiza',
                                          "clave": "123456"},                    
                     reverse_extra_param=True, 
-                    filter_condition={"empleado__ubicacion__empresa__id":0},
+                    filter_condition={"empleado__empresa__id":0},
                     parent_instance_class=Empresa
                     )
         

@@ -82,6 +82,17 @@ class CustomIniDataClass(object):
             estado = self.estado
         )
         
+        self.ubicacion = Ubicacion.objects.create(
+            empresa = self.empresa,
+            descripcion = "Uisrael",
+            tipo_dato =  "point",
+            coordenadas = [{"lat":"-0.19713926299073917", "lon":"-78.49225762271467"}],
+            distancia_min =  0,
+            distancia_max =  20,
+            zona_horaria = "-5 GTM",
+            estado = self.estado
+        )        
+        
         self.empleado = Empleado.objects.create(
             empresa = self.empresa,
             cedula = '0600000000',
