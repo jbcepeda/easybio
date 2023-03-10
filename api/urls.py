@@ -32,6 +32,6 @@ urlpatterns = [
     path('empleado-ubicacion/<id>/', views.EmpleadoUbicacionDetalle.as_view(), name='empleado-ubicacion-detalle'),
     path('empleado-ubicacion/', views.EmpleadoUbicaciones.as_view(), name='empleado-ubicacion'),    
     path('token/', views.GeneralTokenView.as_view(), name='token-general'),
-    path('login-app/', views.LoginAppView.as_view(), name='login-app'),
+    path('bio-login/', views.BiometricLoginView.as_view(), name='bio-login'),
 ]
 

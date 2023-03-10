@@ -4,29 +4,22 @@ import base64
 
 logger = logging.getLogger(__name__)
 class ApiCrypto(object):
-    def encrypt(s, m):
-        em = None
+    def encrypt(base_key, string_message):
+        encrypted_message = None
         try:
-            # key = Fernet.generate_key()
-            # logger.debug("GENERATE KEY: {} {}".format(type(key),key))
-            # dk = key.decode()
-            # logger.debug("DECODE KEY: {} {}".format(type(dk),dk))
-
-            # logger.debug("S KEY: {} tipo:{} encode:{}".format(s, type(s.encode()),s.encode()))
-
-            f = Fernet(s.encode())
-            em = f.encrypt(m.encode())
-            # logger.debug("FERNET  em:{}".format(em))
+            # logger.debug("encrypt  em:{}".format(string_message))
+            _f = Fernet(base_key)
+            encrypted_message = _f.encrypt(string_message.encode())
         except Exception as ex:
             logger.error(str(ex))
-        return em.decode()
+        return encrypted_message.decode()
     
-    def decrypt(s,em):
-        m = None
+    def decrypt(base_key, encrypted_message):
+        string_message = None
         try:
-            f = Fernet(s.encode())
-            m = f.decrypt(em.encode())
-            logger.debug("decryt  m:{}".format(m.decode()))
+            f = Fernet(base_key.encode())
+            string_message = f.decrypt(encrypted_message.encode())
+            # logger.debug("decryt  m:{}".format(string_message.decode()))
         except Exception as ex:
             logger.error(str(ex))
-        return m.decode()
+        return string_message.decode()

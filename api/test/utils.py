@@ -132,16 +132,21 @@ class CustomIniDataToken(object):
             _d = str(utc_datetime.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
         else:
             _d = str(datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
-        s= config('BASE_KEY', cast=str)
-        _general_mobile_key=config('GENERAL_MOBILE_KEY', cast=str)
-        _base_string = _general_mobile_key + _d
+        _bk= config('BASE_KEY', cast=str)
+        _gmi=config('GENERAL_MOBILE_ID', cast=str)
+        _base_string = _gmi + _d
         _t = hashlib.sha256(_base_string.encode('utf-8')).hexdigest()
-        _d = ApiCrypto.encrypt(s=s, m=_d)       
+        _d = ApiCrypto.encrypt(base_key = _bk, string_message=_d)       
+        _token_content = {
+                    'token_message': _t,
+                    'token_crc': _d, 
+                }
+        _token_content = json.dumps(_token_content)
         _data=json.dumps({
-            't': _t,
-            'd': _d,
+            'token': ApiCrypto.encrypt(base_key = _bk,string_message = _token_content),
+            'data': {},
         })
         # logger.debug("init_general_mobile_token _data:{} ".format(str(_data)))
-        return ApiCrypto.encrypt(s=s, m=_data)
+        return ApiCrypto.encrypt(base_key = _bk, string_message = _data)
         
 

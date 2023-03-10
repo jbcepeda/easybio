@@ -219,27 +219,23 @@ class EmpleadoUbicaciones(GenericObjects):
     def __init__(self):
         super().__init__(object_class=EmpleadoUbicacion, serializer_class = EmpleadoUbicacionSerializer,
                           kwargs={'empleado__id':0})
-class LoginAppView(APIView):
-    def post(self, request):
-        try:
-            return Response(status = status.HTTP_200_OK)
-        except Exception as ex:
-            logger.error(str(ex), extra={'className': self.__class__.__name__})
-        return Response(status=status.HTTP_400_BAD_REQUEST)
     
 class GeneralTokenView(APIView):
     def post(self, request):
         try:
             if self.request.data:
-                _v, _d = GeneralTokenAutorization.validate(self.request.data) 
-                if _v:
-                    dt=encrypt(json.dumps({'d':_d}))
-                    return Response( data=dt,status = status.HTTP_200_OK)
+                _is_valid, _token = GeneralTokenAutorization.validate(self.request.data) 
+                if _is_valid:
+                    _data = encrypt(json.dumps({
+                        'token':_token,
+                        'data':{}
+                    }))
+                    return Response( data = _data,status = status.HTTP_200_OK)
         except Exception as ex:
             logger.error(str(ex), extra={'className': self.__class__.__name__})
         return Response(status=status.HTTP_401_UNAUTHORIZED)
  
-class CompanyTokenView(APIView):
+class BiometricLoginView(APIView):
     def post(self, request):
         try:
             _dt = self.request.data.get('dt')

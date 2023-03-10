@@ -181,5 +181,3 @@ LOGGING = {
         }
     }
 }
-GENERAL_MOBILE_KEY = config('GENERAL_MOBILE_KEY')
-TIME_OUT_GENERAL_TOKEN = config('TIME_OUT_GENERAL_TOKEN', default=30000, cast=int)
