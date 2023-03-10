@@ -27,13 +27,13 @@ class GeneralTokenViewTestCase(APITestCase):
         _token_data = CustomIniDataToken.init_general_mobile_token(None)
         url = reverse("api:token-general")
         r = self.client.post(url, _token_data, format="json")
-        logger.debug("test_general_token_post DATA {}".format(r.data))
+        # logger.debug("test_general_token_post DATA {}".format(r.data))
         self.assertEqual(r.status_code,status.HTTP_200_OK)
 
     def test_general_token_post_error(self):
         _token_data = CustomIniDataToken.init_general_mobile_token(datetime.utcnow()+timedelta(seconds=-31))
         url = reverse("api:token-general")
-        r = self.client.post(url, _token_data, format="json")
+        r = self.client.post(url, str(_token_data).encode(), format="json")
         logger.debug("TOKEN R DATA: {}".format(str(r.status_code)))
         self.assertEqual(r.status_code,status.HTTP_401_UNAUTHORIZED)
 

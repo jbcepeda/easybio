@@ -7,7 +7,15 @@ from rest_framework import status
 from django.db.models.query_utils import Q
 import logging
 from api.auth_features.authorization import *
+from decouple import config
+from api.auth_features.util import ApiCrypto
+import json
+
 logger = logging.getLogger(__name__)
+
+def encrypt(data):
+    _s = config('BASE_KEY', cast=str)
+    return ApiCrypto.encrypt(_s, data)
 
 class GenericObjectDetail(APIView):
     def __init__(self, object_class, serializer_class):
@@ -222,13 +230,11 @@ class LoginAppView(APIView):
 class GeneralTokenView(APIView):
     def post(self, request):
         try:
-            _t = self.request.data.get('t')
-            _d = self.request.data.get('d')
-            if _t and _d:
-                _v, _d = GeneralTokenAutorization.validate(t=_t, d=_d) 
+            if self.request.data:
+                _v, _d = GeneralTokenAutorization.validate(self.request.data) 
                 if _v:
-                    dt={'d':_d}
-                    return Response( data=str(dt).encode(),status = status.HTTP_200_OK)
+                    dt=encrypt(json.dumps({'d':_d}))
+                    return Response( data=dt,status = status.HTTP_200_OK)
         except Exception as ex:
             logger.error(str(ex), extra={'className': self.__class__.__name__})
         return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -245,6 +251,7 @@ class CompanyTokenView(APIView):
         except Exception as ex:
             logger.error(str(ex), extra={'className': self.__class__.__name__})
         return Response(status=status.HTTP_401_UNAUTHORIZED)   
+
 
 def error400View(request, exception):
     return render(request, 'error_404.html', status = 400)

@@ -2,8 +2,8 @@ from api.models import *
 from datetime import datetime, time
 import hashlib
 from decouple import config
-
-
+from api.auth_features.util import ApiCrypto
+import json
 
 class CustomIniDataClass(object):
 
@@ -129,16 +129,19 @@ class CustomIniDataToken(object):
     
     def init_general_mobile_token(utc_datetime):
         if utc_datetime:
-            _d = str(utc_datetime.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]) 
+            _d = str(utc_datetime.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
         else:
             _d = str(datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
-        _general_mobile_key=config('GENERAL_MOBILE_KEY')
+        s= config('BASE_KEY', cast=str)
+        _general_mobile_key=config('GENERAL_MOBILE_KEY', cast=str)
         _base_string = _general_mobile_key + _d
         _t = hashlib.sha256(_base_string.encode('utf-8')).hexdigest()
-        _data={
+        _d = ApiCrypto.encrypt(s=s, m=_d)       
+        _data=json.dumps({
             't': _t,
             'd': _d,
-        }        
-        return _data
+        })
+        # logger.debug("init_general_mobile_token _data:{} ".format(str(_data)))
+        return ApiCrypto.encrypt(s=s, m=_data)
         
 
