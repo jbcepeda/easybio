@@ -10,7 +10,7 @@ from api.auth_features.authorization import *
 from decouple import config
 from api.auth_features.util import ApiCrypto
 import json
-from base64 import b64encode
+from base64 import b64decode, b64encode
 
 logger = logging.getLogger(__name__)
 
@@ -262,12 +262,11 @@ class BiometricLoginView(APIView):
 
             if not (_eid and _event_photo):
                 return Response(status=status.HTTP_401_UNAUTHORIZED)   
-            _employee = Empleado.objects.filter(Q(cedula = _eid )).first()
-            logger.debug("Empleado:{} {} {}".format(_eid, _employee.apellidos,len(_employee.foto)))        
+            _employee = Empleado.objects.filter(Q(cedula = _eid )).first()     
 
             if _employee and len(_employee.foto)>0:
-                _employee_photo = b64encode(_employee.foto.encode())
-                _event_photo = b64encode(_event_photo.encode())
+                _employee_photo = _employee.foto.encode('utf-8')
+                _event_photo = _event_photo.encode('utf-8')
                 _is_valid_login,_token = BiometricLoginAutorization.login(self, base_key = _base_key, client_id = _client_id,
                                                  photo = _event_photo, employee_photo = _employee_photo)
                 if _is_valid_login:

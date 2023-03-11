@@ -4,7 +4,9 @@ import hashlib
 from decouple import config
 from api.auth_features.util import ApiCrypto
 import json
-
+from django.conf import settings
+from pathlib import Path
+from base64 import b64encode 
 class CustomIniDataClass(object):
 
     def init_data_test(self) -> None:
@@ -92,13 +94,16 @@ class CustomIniDataClass(object):
             zona_horaria = "-5 GTM",
             estado = self.estado
         )        
-        
+        _source_path = Path.joinpath(settings.BASE_DIR, "tmp","foto_serio.jpeg")
+        with open(_source_path, "rb") as img_file:
+            f = b64encode(img_file.read())
+
         self.empleado = Empleado.objects.create(
             empresa = self.empresa,
             cedula = '0600000000',
             nombres = 'Benjamin',
             apellidos = 'Cepeda',
-            foto = None,
+            foto = f.decode('utf-8'),
             celular = '0999999999',
             departamento = self.departamento,
             calendario = self.calendario,
@@ -127,7 +132,7 @@ class CustomIniDataClass(object):
 
 class CustomIniDataToken(object):
     
-    def init_general_mobile_token(utc_datetime):
+    def init_general_mobile_data(utc_datetime):
         if utc_datetime:
             _d = str(utc_datetime.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
         else:
@@ -148,5 +153,34 @@ class CustomIniDataToken(object):
         })
         # logger.debug("init_general_mobile_token _data:{} ".format(str(_data)))
         return ApiCrypto.encrypt(base_key = _bk, string_message = _data)
-        
 
+    def init_general_mobile_token(utc_datetime):
+        if utc_datetime:
+            _d = str(utc_datetime.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
+        else:
+            _d = str(datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
+        _bk= config('BASE_KEY', cast=str)
+        _gmi=config('GENERAL_MOBILE_ID', cast=str)
+        _base_string = _gmi + _d
+        _t = hashlib.sha256(_base_string.encode('utf-8')).hexdigest()
+        _d = ApiCrypto.encrypt(base_key = _bk, string_message=_d)       
+        _token_content = {
+                    'token_message': _t,
+                    'token_crc': _d, 
+                }
+        _token_content = json.dumps(_token_content)
+        return ApiCrypto.encrypt(base_key = _bk, string_message= _token_content)
+        
+    def encrypt(data):
+        _bk= config('BASE_KEY', cast=str)
+        return ApiCrypto.encrypt(base_key = _bk, string_message = data)
+        
+    def decrypt(data):
+        _bk= config('BASE_KEY', cast=str)
+        return ApiCrypto.decrypt(base_key = _bk, encrypted_message = data)
+    
+    def get_token_info(data):
+        _data = CustomIniDataToken.decrypt(data)
+        _data = json.loads(_data)
+        _token = _data.get('token')
+        return _token        
