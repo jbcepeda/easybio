@@ -10,6 +10,7 @@ from api.auth_features.authorization import *
 from decouple import config
 from api.auth_features.util import ApiCrypto
 import json
+from base64 import b64encode
 
 logger = logging.getLogger(__name__)
 
@@ -224,26 +225,57 @@ class GeneralTokenView(APIView):
     def post(self, request):
         try:
             if self.request.data:
-                _is_valid, _token = GeneralTokenAutorization.validate(self.request.data) 
+                _base_key = config('BASE_KEY', cast=str)
+                _client_id = config('GENERAL_MOBILE_ID', cast=str)
+                _time_out = config('TIME_OUT_GENERAL_TOKEN', cast=int)
+                _is_valid = GeneralTokenAutorization.validate(data =self.request.data,
+                                        base_key=_base_key, client_id = _client_id, time_out=_time_out) 
                 if _is_valid:
+                    _token = ApiToken.generate_token(base_key = _base_key, client_id = _client_id)
                     _data = encrypt(json.dumps({
                         'token':_token,
                         'data':{}
                     }))
-                    return Response( data = _data,status = status.HTTP_200_OK)
+                    return Response( data = _data, status = status.HTTP_200_OK)
         except Exception as ex:
             logger.error(str(ex), extra={'className': self.__class__.__name__})
         return Response(status=status.HTTP_401_UNAUTHORIZED)
  
 class BiometricLoginView(APIView):
     def post(self, request):
+        if not self.request.data:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)                  
+        _data = self.request.data
+        _eid, _event_photo = None, None
         try:
-            _dt = self.request.data.get('dt')
-            _d = self.request.data.get('d')
-            if _dt and _d:
-                _v, _d = GeneralTokenAutorization.validate(t=_t, d=_d) 
-                if _v:
-                    return Response( data={'d':_d},status = status.HTTP_200_OK)
+            _base_key = config('BASE_KEY', cast=str)
+            _client_id = config('GENERAL_MOBILE_ID', cast=str)
+            _time_out = config('TIME_OUT_GENERAL_TOKEN', cast=int)            
+            _is_valid_token = GeneralTokenAutorization.validate(data = _data,
+                                            base_key=_base_key, client_id = _client_id, time_out=_time_out) 
+            if _is_valid_token:
+                _data = ApiCrypto.decrypt(base_key=_base_key, encrypted_message=_data)
+                _data = json.loads(_data)       
+                _bio_data = _data.get('data')
+                _eid = _bio_data.get('eid')
+                _event_photo = _bio_data.get('f')
+
+            if not (_eid and _event_photo):
+                return Response(status=status.HTTP_401_UNAUTHORIZED)   
+            _employee = Empleado.objects.filter(Q(cedula = _eid )).first()
+            logger.debug("Empleado:{} {} {}".format(_eid, _employee.apellidos,len(_employee.foto)))        
+
+            if _employee and len(_employee.foto)>0:
+                _employee_photo = b64encode(_employee.foto.encode())
+                _event_photo = b64encode(_event_photo.encode())
+                _is_valid_login,_token = BiometricLoginAutorization.login(self, base_key = _base_key, client_id = _client_id,
+                                                 photo = _event_photo, employee_photo = _employee_photo)
+                if _is_valid_login:
+                    _data = encrypt(json.dumps({
+                        'token':_token,
+                        'data':{}
+                    }))
+                    return Response( data = _data, status = status.HTTP_200_OK)
         except Exception as ex:
             logger.error(str(ex), extra={'className': self.__class__.__name__})
         return Response(status=status.HTTP_401_UNAUTHORIZED)   
